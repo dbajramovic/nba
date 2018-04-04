@@ -1,0 +1,13 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head> 
+    <title>Getting Started: Serving Web Content</title> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <div th:each="str,iterStat : league.standard">
+   <span th:text="${str}"/></span><!--This will print the index value-->
+   <span th:text="${iterStat.index}"/></span><!--This will print the Index-->
+</div> 
+</body>
+</html>
