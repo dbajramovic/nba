@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface TeamDAO extends CrudRepository<TeamEntity, Long> {
+public interface TeamDAO extends CrudRepository<TeamEntity, Long>, TeamRepositoryCustom {
 
 }

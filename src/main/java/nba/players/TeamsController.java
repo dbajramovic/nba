@@ -36,7 +36,7 @@ public class TeamsController {
     TeamDAO teamDAO;
 
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "teams", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @RequestMapping(value = "saveTeams", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
     public List<Team> getTeam(@RequestParam String year, Model model) {
         final String url = "http://data.nba.net/prod/v1/" + year + "/teams.json";
         try {

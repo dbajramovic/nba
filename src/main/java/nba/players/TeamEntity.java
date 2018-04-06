@@ -42,7 +42,7 @@ public class TeamEntity {
     private String year;
 
     @OneToMany(mappedBy = "team")
-    private List<PlayerEntity> players;
+    private List<PlayerTeamEntity> playerTeams;
 
     public Long getId() {
         return id;
@@ -140,12 +140,12 @@ public class TeamEntity {
         this.divName = divName;
     }
 
-    public List<PlayerEntity> getPlayers() {
-        return players;
+    public List<PlayerTeamEntity> getPlayers() {
+        return playerTeams;
     }
 
-    public void setPlayers(List<PlayerEntity> players) {
-        this.players = players;
+    public void setPlayers(List<PlayerTeamEntity> playerTeams) {
+        this.playerTeams = playerTeams;
     }
 
     public String getYear() {

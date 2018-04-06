@@ -2,14 +2,14 @@ package nba.players;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class PlayerEntity {
@@ -70,9 +70,11 @@ public class PlayerEntity {
     @Column(name = "COUNTRY")
     private String country;
 
-    @ManyToOne
-    @JoinColumn(name = "TEAM_ID")
-    private TeamEntity team;
+    @Column(name = "YEAR")
+    private String year;
+
+    @OneToMany(mappedBy = "player")
+    private List<PlayerTeamEntity> playerTeams;
 
     public Long getId() {
         return id;
@@ -84,6 +86,14 @@ public class PlayerEntity {
 
     public String getFirstName() {
         return firstName;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 
     public void setFirstName(String firstName) {
@@ -218,12 +228,12 @@ public class PlayerEntity {
         this.country = country;
     }
 
-    public TeamEntity getTeam() {
-        return team;
+    public List<PlayerTeamEntity> getPlayerTeams() {
+        return playerTeams;
     }
 
-    public void setTeam(TeamEntity team) {
-        this.team = team;
+    public void setPlayerTeams(List<PlayerTeamEntity> playerTeams) {
+        this.playerTeams = playerTeams;
     }
 
 }
