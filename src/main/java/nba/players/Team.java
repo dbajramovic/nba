@@ -17,6 +17,8 @@ public class Team implements Serializable {
     private String confName;
     private String divName;
 
+    private String year;
+
     public Boolean getIsNBAFranchise() {
         return isNBAFranchise;
     }
@@ -105,114 +107,12 @@ public class Team implements Serializable {
         this.divName = divName;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((altCityName == null) ? 0 : altCityName.hashCode());
-        result = prime * result + ((city == null) ? 0 : city.hashCode());
-        result = prime * result + ((confName == null) ? 0 : confName.hashCode());
-        result = prime * result + ((divName == null) ? 0 : divName.hashCode());
-        result = prime * result + ((fullName == null) ? 0 : fullName.hashCode());
-        result = prime * result + ((isAllStar == null) ? 0 : isAllStar.hashCode());
-        result = prime * result + ((isNBAFranchise == null) ? 0 : isNBAFranchise.hashCode());
-        result = prime * result + ((nickname == null) ? 0 : nickname.hashCode());
-        result = prime * result + ((teamId == null) ? 0 : teamId.hashCode());
-        result = prime * result + ((tricode == null) ? 0 : tricode.hashCode());
-        result = prime * result + ((urlName == null) ? 0 : urlName.hashCode());
-        return result;
+    public String getYear() {
+        return year;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Team other = (Team) obj;
-        if (altCityName == null) {
-            if (other.altCityName != null) {
-                return false;
-            }
-        } else if (!altCityName.equals(other.altCityName)) {
-            return false;
-        }
-        if (city == null) {
-            if (other.city != null) {
-                return false;
-            }
-        } else if (!city.equals(other.city)) {
-            return false;
-        }
-        if (confName == null) {
-            if (other.confName != null) {
-                return false;
-            }
-        } else if (!confName.equals(other.confName)) {
-            return false;
-        }
-        if (divName == null) {
-            if (other.divName != null) {
-                return false;
-            }
-        } else if (!divName.equals(other.divName)) {
-            return false;
-        }
-        if (fullName == null) {
-            if (other.fullName != null) {
-                return false;
-            }
-        } else if (!fullName.equals(other.fullName)) {
-            return false;
-        }
-        if (isAllStar == null) {
-            if (other.isAllStar != null) {
-                return false;
-            }
-        } else if (!isAllStar.equals(other.isAllStar)) {
-            return false;
-        }
-        if (isNBAFranchise == null) {
-            if (other.isNBAFranchise != null) {
-                return false;
-            }
-        } else if (!isNBAFranchise.equals(other.isNBAFranchise)) {
-            return false;
-        }
-        if (nickname == null) {
-            if (other.nickname != null) {
-                return false;
-            }
-        } else if (!nickname.equals(other.nickname)) {
-            return false;
-        }
-        if (teamId == null) {
-            if (other.teamId != null) {
-                return false;
-            }
-        } else if (!teamId.equals(other.teamId)) {
-            return false;
-        }
-        if (tricode == null) {
-            if (other.tricode != null) {
-                return false;
-            }
-        } else if (!tricode.equals(other.tricode)) {
-            return false;
-        }
-        if (urlName == null) {
-            if (other.urlName != null) {
-                return false;
-            }
-        } else if (!urlName.equals(other.urlName)) {
-            return false;
-        }
-        return true;
+    public void setYear(String year) {
+        this.year = year;
     }
 
     @Override
@@ -240,6 +140,8 @@ public class Team implements Serializable {
         builder.append(confName);
         builder.append(", divName=");
         builder.append(divName);
+        builder.append(", year=");
+        builder.append(year);
         builder.append("]");
         return builder.toString();
     }

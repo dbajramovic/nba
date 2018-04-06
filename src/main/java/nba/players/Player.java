@@ -29,6 +29,7 @@ public class Player implements Serializable {
     private String lastAffliation;
     private String country;
     private Team team;
+    private String year;
 
     public String getFirstName() {
         return firstName;
@@ -182,6 +183,14 @@ public class Player implements Serializable {
         this.team = team;
     }
 
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -204,6 +213,7 @@ public class Player implements Serializable {
         result = prime * result + ((teamId == null) ? 0 : teamId.hashCode());
         result = prime * result + ((weightKilograms == null) ? 0 : weightKilograms.hashCode());
         result = prime * result + ((weightPounds == null) ? 0 : weightPounds.hashCode());
+        result = prime * result + ((year == null) ? 0 : year.hashCode());
         result = prime * result + ((yearsPro == null) ? 0 : yearsPro.hashCode());
         return result;
     }
@@ -346,6 +356,13 @@ public class Player implements Serializable {
         } else if (!weightPounds.equals(other.weightPounds)) {
             return false;
         }
+        if (year == null) {
+            if (other.year != null) {
+                return false;
+            }
+        } else if (!year.equals(other.year)) {
+            return false;
+        }
         if (yearsPro == null) {
             if (other.yearsPro != null) {
                 return false;
@@ -397,6 +414,8 @@ public class Player implements Serializable {
         builder.append(country);
         builder.append(", team=");
         builder.append(team);
+        builder.append(", year=");
+        builder.append(year);
         builder.append("]");
         return builder.toString();
     }

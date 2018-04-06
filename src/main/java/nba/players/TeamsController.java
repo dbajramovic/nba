@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,12 +34,30 @@ public class TeamsController {
     RestTemplate restTemplate;
 
     @Autowired
+    TeamMapper teamMapper;
+
+    @Autowired
     TeamDAO teamDAO;
+
+    private final int YEAR = 2012;
+
+    private final int ENDYEAR = 2017;
+
+    @RequestMapping(value = "saveAllTeams", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<Team> saveAllTeams(Model model) {
+        List<Team> teams = new ArrayList<>();
+        for (int i = YEAR; i < ENDYEAR; i++) {
+            teams.addAll(saveTeams(i + "", model));
+        }
+        return teams;
+    }
 
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "saveTeams", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-    public List<Team> getTeam(@RequestParam String year, Model model) {
+    public List<Team> saveTeams(@RequestParam String year, Model model) {
         final String url = "http://data.nba.net/prod/v1/" + year + "/teams.json";
+        List<Team> teamList = new ArrayList<>();
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -96,12 +115,13 @@ public class TeamsController {
                     ent.setUrlName((String) t.get("urlName"));
                 }
                 if (t.get("confName") != null) {
-                    ent.setUrlName((String) t.get("confName"));
+                    ent.setConfName((String) t.get("confName"));
                 }
                 ent.setYear(year);
                 teamDAO.save(ent);
+                teamList.add(teamMapper.entityToDto(ent));
             }
-            return Collections.emptyList();
+            return teamList;
 
         } catch (Exception e) {
             System.out.println("SHIT:" + e.getMessage());

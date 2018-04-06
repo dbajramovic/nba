@@ -31,6 +31,20 @@ public class PlayersController {
     @Autowired
     PlayerService playersService;
 
+    private final int YEAR = 2012;
+
+    private final int ENDYEAR = 2017;
+
+    @RequestMapping(value = "saveAllPlayers", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<Player> saveAllPlayers(Model model) {
+        List<Player> players = new ArrayList<>();
+        for (int i = YEAR; i < ENDYEAR; i++) {
+            players.addAll(getRoster(i + "", model));
+        }
+        return players;
+    }
+
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "roster", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
     @ResponseBody
@@ -57,12 +71,17 @@ public class PlayersController {
                     model.addAttribute("players", players);
                 }
             }
-            playersService.savePlayers(players, year);
-            return Collections.emptyList();
+            return playersService.savePlayers(players, year);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return Collections.emptyList();
+    }
+
+    @RequestMapping(value = "teams/player", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<Team> teamsOfPlayer(@RequestParam final String name, @RequestParam final String surname) {
+        return playersService.teamsOfPlayer(name, surname);
     }
 
 }

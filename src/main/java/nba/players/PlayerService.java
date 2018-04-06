@@ -3,7 +3,13 @@ package nba.players;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,7 +26,33 @@ public class PlayerService {
     @Autowired
     PlayerTeamDAO playerTeamDAO;
 
-    public String savePlayers(ArrayList<LinkedHashMap<String, Object>> players, String year) {
+    @Autowired
+    TeamMapper teamMapper;
+
+    @Autowired
+    PlayerMapper playerMapper;
+
+    public List<Team> teamsOfPlayer(String name, String surname) {
+        Map<String, TeamEntity> map = new HashMap<>();
+        List<TeamEntity> teams = new ArrayList<>();
+        List<PlayerEntity> players = playerDAO.findByNameAndSurname(name, surname);
+        List<String> refIds = players.parallelStream().map(PlayerEntity::getPersonId).distinct().collect(Collectors.toList());
+        for (String refId : refIds) {
+            teams.addAll(teamDAO.findTeamsOfPlayer(refId));
+        }
+        for (TeamEntity team : teams) {
+            map.put(team.getTeamId(), team);
+        }
+        teams.clear();
+        for (Map.Entry<String, TeamEntity> entry : map.entrySet()) {
+            teams.add(entry.getValue());
+        }
+        return teamMapper.entitiesToDtos(teams);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public List<Player> savePlayers(ArrayList<LinkedHashMap<String, Object>> players, String year) {
+        List<Player> playerList = new ArrayList<>();
         for (LinkedHashMap<String, Object> t : players) {
             PlayerEntity ent = new PlayerEntity();
 
@@ -83,6 +115,7 @@ public class PlayerService {
             }
             ent.setYear(year);
             PlayerEntity player = playerDAO.save(ent);
+            playerList.add(playerMapper.entityToDto(player));
             if (t.get("teams") != null) {
                 @SuppressWarnings("unchecked")
                 ArrayList<LinkedHashMap<String, Object>> teams = (ArrayList<LinkedHashMap<String, Object>>) t.get("teams");
@@ -99,7 +132,7 @@ public class PlayerService {
                 }
             }
         }
-        return year;
+        return playerList;
     }
 
     private static Boolean canBeParsedIntoLong(String string) {
