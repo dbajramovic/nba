@@ -27,7 +27,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import nba.players.PlayersController;
+import nba.controllers.PlayersController;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = PlayersController.class)
