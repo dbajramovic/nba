@@ -3,6 +3,7 @@ package nba.controllers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import nba.model.Game;
+import nba.service.GameService;
+import nba.service.PlayService;
 import nba.service.PlayerService;
 
 @Controller
@@ -35,6 +38,26 @@ public class GameController {
 
     @Autowired
     PlayerService playersService;
+
+    @Autowired
+    PlayService playService;
+
+    @Autowired
+    GameService gameService;
+
+    @RequestMapping(value = "saveAllGames", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<Game> saveAllPlayers(Model model) {
+        List<Game> games = new ArrayList<>();
+        Map<String, String> gamesToGet = gameService.getNewGames();
+        for (Map.Entry<String, String> entry : gamesToGet.entrySet()) {
+            if (entry.getValue().startsWith("2016") || entry.getValue().startsWith("2017") || entry.getValue().startsWith("2018")) {
+                LOGGER.info("Saving game:{} on date:{}", entry.getKey(), entry.getValue());
+                games.add(getGame(entry.getValue(), entry.getKey(), model));
+            }
+        }
+        return games;
+    }
 
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "game", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
@@ -50,17 +73,18 @@ public class GameController {
                     new ParameterizedTypeReference<Map<String, Object>>() {
                     }, params);
             Map<String, Object> map = response.getBody();
-            ArrayList<LinkedHashMap<String, Object>> players = new ArrayList<>();
+            ArrayList<LinkedHashMap<String, Object>> plays = new ArrayList<>();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (entry.getKey().equalsIgnoreCase("sports_content")) {
                     @SuppressWarnings("unchecked")
                     Map<String, Object> playerMap = (HashMap<String, Object>) entry.getValue();
                     LinkedHashMap<String, Object> gameMap = (LinkedHashMap<String, Object>) playerMap.get("game");
+                    plays = (ArrayList<LinkedHashMap<String, Object>>) gameMap.get("play");
                 }
             }
-            return null;
+            return playService.savePlays(plays, gameId, date);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            LOGGER.error("Failed");
         }
         return null;
     }

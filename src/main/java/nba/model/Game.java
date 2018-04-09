@@ -1,6 +1,7 @@
 package nba.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class Game implements Serializable {
 
@@ -22,6 +23,8 @@ public class Game implements Serializable {
     private String recapAvailable;
     private String notebookAvailable;
     private String tntOt;
+
+    private List<Play> plays;
 
     public String getGameId() {
         return gameId;
@@ -157,6 +160,57 @@ public class Game implements Serializable {
 
     public void setTntOt(String tntOt) {
         this.tntOt = tntOt;
+    }
+
+    public List<Play> getPlays() {
+        return plays;
+    }
+
+    public void setPlays(List<Play> plays) {
+        this.plays = plays;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Game [gameId=");
+        builder.append(gameId);
+        builder.append(", gameUrl=");
+        builder.append(gameUrl);
+        builder.append(", seasonId=");
+        builder.append(seasonId);
+        builder.append(", date=");
+        builder.append(date);
+        builder.append(", time=");
+        builder.append(time);
+        builder.append(", arena=");
+        builder.append(arena);
+        builder.append(", city=");
+        builder.append(city);
+        builder.append(", state=");
+        builder.append(state);
+        builder.append(", country=");
+        builder.append(country);
+        builder.append(", homeStartDate=");
+        builder.append(homeStartDate);
+        builder.append(", homeStartTime=");
+        builder.append(homeStartTime);
+        builder.append(", visitorStartDate=");
+        builder.append(visitorStartDate);
+        builder.append(", visitorStartTime=");
+        builder.append(visitorStartTime);
+        builder.append(", previewAvailable=");
+        builder.append(previewAvailable);
+        builder.append(", recapAvailable=");
+        builder.append(recapAvailable);
+        builder.append(", notebookAvailable=");
+        builder.append(notebookAvailable);
+        builder.append(", tntOt=");
+        builder.append(tntOt);
+        builder.append(", plays=");
+        builder.append(plays);
+        builder.append("]");
+        return builder.toString();
     }
 
 }
