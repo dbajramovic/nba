@@ -7,9 +7,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import nba.dao.model.GameEntity;
+import nba.dao.model.ScheduleEntity;
 import nba.dao.model.TeamEntity;
+import nba.dao.repos.GameDAO;
+import nba.dao.repos.ScheduleDAO;
 import nba.dao.repos.TeamDAO;
+import nba.mapper.GameMapper;
+import nba.mapper.ScheduleMapper;
 import nba.mapper.TeamMapper;
+import nba.model.Schedule;
 import nba.model.Team;
 
 @Component
@@ -20,6 +27,18 @@ public class TeamService {
 
     @Autowired
     TeamMapper teamMapper;
+
+    @Autowired
+    ScheduleDAO scheduleDAO;
+
+    @Autowired
+    ScheduleMapper scheduleMapper;
+
+    @Autowired
+    GameMapper gameMapper;
+
+    @Autowired
+    GameDAO gameDAO;
 
     public List<String> getNicknamesOfTeams(Boolean onlyNbaFranchises) {
         return teamDAO.getNicknames(onlyNbaFranchises);
@@ -71,5 +90,13 @@ public class TeamService {
         }
         return teamList;
 
+    }
+
+    public Schedule teamSchedule(String team, String year) {
+        ScheduleEntity scheduleEnt = scheduleDAO.findByTeamAndYear(team, year);
+        Schedule sch = scheduleMapper.entitytoDto(scheduleEnt);
+        List<GameEntity> games = gameDAO.findBySchedule(scheduleEnt.getId());
+        sch.setGames(gameMapper.entitesToDtos(games, false));
+        return sch;
     }
 }

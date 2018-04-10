@@ -35,7 +35,7 @@ public class PlayService {
     @Transactional(rollbackFor = Exception.class)
     public Game savePlays(List<LinkedHashMap<String, Object>> plays, String gameId, String date) {
         GameEntity game = gameDAO.findGameForGameIdAndDate(gameId, date);
-        Game gameModel = gameMapper.entitytoDto(game);
+        Game gameModel = gameMapper.entitytoDto(game, false);
         gameModel.setPlays(new ArrayList<>());
         for (LinkedHashMap<String, Object> t : plays) {
             PlayEntity play = new PlayEntity();

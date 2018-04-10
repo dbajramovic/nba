@@ -47,7 +47,7 @@ public class GameController {
 
     @RequestMapping(value = "saveAllGames", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
     @ResponseBody
-    public List<Game> saveAllPlayers(Model model) {
+    public List<Game> saveAllGames(Model model) {
         List<Game> games = new ArrayList<>();
         Map<String, String> gamesToGet = gameService.getNewGames();
         for (Map.Entry<String, String> entry : gamesToGet.entrySet()) {
@@ -57,6 +57,12 @@ public class GameController {
             }
         }
         return games;
+    }
+
+    @RequestMapping(value = "fullgame", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public Game getFullGame(@RequestParam Long gameId, Model model) {
+        return gameService.getFullGame(gameId);
     }
 
     @SuppressWarnings("unchecked")

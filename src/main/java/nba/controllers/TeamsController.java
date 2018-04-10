@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nba.dao.repos.TeamDAO;
 import nba.mapper.TeamMapper;
+import nba.model.Schedule;
 import nba.model.Team;
 import nba.model.Years;
 import nba.service.TeamService;
@@ -61,6 +62,12 @@ public class TeamsController {
             LOGGER.info("Year {} saved.", i);
         }
         return teams;
+    }
+
+    @RequestMapping(value = "teamSchedule", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public Schedule teamSchedule(@RequestParam final String team, @RequestParam final String year, Model model) {
+        return teamService.teamSchedule(team, year);
     }
 
     @SuppressWarnings("unchecked")

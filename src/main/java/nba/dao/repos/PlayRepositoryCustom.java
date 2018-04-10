@@ -1,5 +1,9 @@
 package nba.dao.repos;
 
-public interface PlayRepositoryCustom {
+import java.util.List;
 
+import nba.dao.model.PlayEntity;
+
+public interface PlayRepositoryCustom {
+    List<PlayEntity> findByGameId(Long gameId);
 }

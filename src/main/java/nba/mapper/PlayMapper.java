@@ -1,5 +1,8 @@
 package nba.mapper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import nba.dao.model.PlayEntity;
@@ -23,6 +26,14 @@ public class PlayMapper {
         play.setTeamAbr(playEnt.getTeamAbr());
         play.setPeriod(playEnt.getPeriod());
         return play;
+    }
+
+    public List<Play> entitesToDtos(List<PlayEntity> playEnts) {
+        List<Play> plays = new ArrayList<>();
+        for (PlayEntity ent : playEnts) {
+            plays.add(entitytoDto(ent));
+        }
+        return plays;
     }
 
 }

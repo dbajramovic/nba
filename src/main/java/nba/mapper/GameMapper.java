@@ -1,5 +1,9 @@
 package nba.mapper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import nba.dao.model.GameEntity;
@@ -8,7 +12,10 @@ import nba.model.Game;
 @Service
 public class GameMapper {
 
-    public Game entitytoDto(GameEntity game) {
+    @Autowired
+    PlayMapper playMapper;
+
+    public Game entitytoDto(GameEntity game, Boolean includePlays) {
         Game gameDto = new Game();
         gameDto.setGameId(game.getGameId());
         gameDto.setArena(game.getArena());
@@ -23,7 +30,18 @@ public class GameMapper {
         gameDto.setTime(game.getTime());
         gameDto.setVisitorStartDate(game.getVisitorStartDate());
         gameDto.setVisitorStartTime(game.getVisitorStartTime());
+        if (includePlays) {
+            gameDto.setPlays(playMapper.entitesToDtos(game.getPlays()));
+        }
         return gameDto;
+    }
+
+    public List<Game> entitesToDtos(List<GameEntity> ents, Boolean includePlays) {
+        List<Game> games = new ArrayList<>();
+        for (GameEntity ent : ents) {
+            games.add(entitytoDto(ent, includePlays));
+        }
+        return games;
     }
 
 }
