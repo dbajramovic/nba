@@ -20,6 +20,7 @@ import nba.dao.model.TeamEntity;
 import nba.dao.repos.PlayerDAO;
 import nba.dao.repos.PlayerTeamDAO;
 import nba.dao.repos.TeamDAO;
+import nba.helpers.MappingChecker;
 import nba.mapper.PlayerMapper;
 import nba.mapper.TeamMapper;
 import nba.model.Player;
@@ -85,19 +86,19 @@ public class PlayerService {
             if (t.get("isActive") != null) {
                 ent.setIsActive((Boolean) t.get("isActive"));
             }
-            if (canBeParsedIntoLong((String) t.get("heightFeet"))) {
+            if (MappingChecker.canBeParsedIntoLong((String) t.get("heightFeet"))) {
                 ent.setHeightFeet(Long.parseLong((String) t.get("heightFeet")));
             }
-            if (canBeParsedIntoLong((String) t.get("heightInches"))) {
+            if (MappingChecker.canBeParsedIntoLong((String) t.get("heightInches"))) {
                 ent.setHeightInches(Long.parseLong((String) t.get("heightInches")));
             }
-            if (canBeParsedIntoBigDecimal((String) t.get("heightMeters"))) {
+            if (MappingChecker.canBeParsedIntoBigDecimal((String) t.get("heightMeters"))) {
                 ent.setHeightMeters(new BigDecimal((String) t.get("heightMeters")));
             }
-            if (canBeParsedIntoLong((String) t.get("weightPounds"))) {
+            if (MappingChecker.canBeParsedIntoLong((String) t.get("weightPounds"))) {
                 ent.setWeightPounds(Long.parseLong((String) t.get("weightPounds")));
             }
-            if (canBeParsedIntoBigDecimal((String) t.get("weightKilograms"))) {
+            if (MappingChecker.canBeParsedIntoBigDecimal((String) t.get("weightKilograms"))) {
                 ent.setWeightKilograms(new BigDecimal((String) t.get("weightKilograms")));
             }
             if (t.get("dateOfBirthUTC") != null && !((String) t.get("dateOfBirthUTC")).equalsIgnoreCase("")) {
@@ -112,7 +113,7 @@ public class PlayerService {
             if (t.get("nbaDebutYear") != null) {
                 ent.setNbaDebutYear((String) t.get("nbaDebutYear"));
             }
-            if (canBeParsedIntoLong((String) t.get("yearsPro"))) {
+            if (MappingChecker.canBeParsedIntoLong((String) t.get("yearsPro"))) {
                 ent.setYearsPro(Long.parseLong((String) t.get("yearsPro")));
             }
             if (t.get("collegeName") != null) {
@@ -146,17 +147,4 @@ public class PlayerService {
         return playerList;
     }
 
-    private static Boolean canBeParsedIntoLong(String string) {
-        if (string == null || string.replaceAll("[0-9]", "").trim().length() > 0 || string.equals("") || string.trim().length() == 0) {
-            return false;
-        }
-        return true;
-    }
-
-    private static Boolean canBeParsedIntoBigDecimal(String string) {
-        if (string == null || string.replaceAll("[0-9.]", "").trim().length() > 0 || string.equals("") || string.trim().length() == 0) {
-            return false;
-        }
-        return true;
-    }
 }

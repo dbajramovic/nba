@@ -1,5 +1,7 @@
 package nba.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -7,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import nba.dao.model.GameEntity;
+import nba.dao.model.PlayEntity;
+import nba.dao.model.PlayInfo;
 import nba.dao.repos.GameDAO;
 import nba.dao.repos.PlayDAO;
+import nba.helpers.PlayDescriptionParser;
 import nba.mapper.GameMapper;
 import nba.model.Game;
 
@@ -35,6 +40,18 @@ public class GameService {
             return gameMapper.entitytoDto(game.get(), true);
         }
         return null;
+    }
+
+    public List<PlayInfo> digestGame(Long gameId) {
+        List<PlayInfo> playInfos = new ArrayList<>();
+        Optional<GameEntity> game = gameDAO.findById(gameId);
+        if (game.isPresent()) {
+            game.get().setPlays(playDAO.findByGameId(gameId));
+            for (PlayEntity play : game.get().getPlays()) {
+                playInfos.add(PlayDescriptionParser.determineTypeOfPlay(play.getDescription()));
+            }
+        }
+        return playInfos;
     }
 
 }

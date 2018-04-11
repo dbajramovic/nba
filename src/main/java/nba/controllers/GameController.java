@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import nba.dao.model.PlayInfo;
 import nba.model.Game;
 import nba.service.GameService;
 import nba.service.PlayService;
@@ -63,6 +64,12 @@ public class GameController {
     @ResponseBody
     public Game getFullGame(@RequestParam Long gameId, Model model) {
         return gameService.getFullGame(gameId);
+    }
+
+    @RequestMapping(value = "digestGame", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<PlayInfo> digestGame(@RequestParam Long gameId, Model model) {
+        return gameService.digestGame(gameId);
     }
 
     @SuppressWarnings("unchecked")
