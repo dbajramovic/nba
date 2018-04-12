@@ -21,6 +21,7 @@ public class TeamBoxscoreStatEntity {
     private Long biggestLead;
     private Long secondChancePoints;
     private Long longestRun;
+    private String teamId;
 
     @OneToOne
     @JoinColumn(name = "BOXSCORE_ID")
@@ -72,6 +73,14 @@ public class TeamBoxscoreStatEntity {
 
     public void setBoxscore(BoxscoreEntity boxscore) {
         this.boxscore = boxscore;
+    }
+
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(String teamId) {
+        this.teamId = teamId;
     }
 
 }

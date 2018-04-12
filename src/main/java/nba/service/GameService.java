@@ -8,6 +8,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
+
 import nba.dao.model.GameEntity;
 import nba.dao.model.PlayEntity;
 import nba.dao.model.PlayInfo;
@@ -52,6 +54,10 @@ public class GameService {
             }
         }
         return playInfos;
+    }
+
+    public List<Game> getGames() {
+        return gameMapper.entitesToDtos(Lists.newArrayList(gameDAO.findAll()), false);
     }
 
 }

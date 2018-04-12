@@ -6,6 +6,7 @@ public class TeamBoxscoreStat {
     private Long biggestLead;
     private Long secondChancePoints;
     private Long longestRun;
+    private String teamId;
 
     private PlayerGameStats totals;
 
@@ -57,6 +58,14 @@ public class TeamBoxscoreStat {
         this.totals = totals;
     }
 
+    public String getTeamId() {
+        return teamId;
+    }
+
+    public void setTeamId(String teamId) {
+        this.teamId = teamId;
+    }
+
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
@@ -70,6 +79,8 @@ public class TeamBoxscoreStat {
         builder.append(secondChancePoints);
         builder.append(", longestRun=");
         builder.append(longestRun);
+        builder.append(", teamId=");
+        builder.append(teamId);
         builder.append(", totals=");
         builder.append(totals);
         builder.append("]");
