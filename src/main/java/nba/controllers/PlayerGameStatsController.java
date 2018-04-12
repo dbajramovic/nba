@@ -1,13 +1,7 @@
 package nba.controllers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import nba.model.Boxscore;
-import nba.model.Game;
 import nba.service.BoxscoreService;
 import nba.service.GameService;
 import nba.service.PlayerGameStatsService;
@@ -49,34 +42,10 @@ public class PlayerGameStatsController {
     @Autowired
     GameService gameService;
 
-    @RequestMapping(value = "boxscore/all", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-    @ResponseBody
-    @Transactional(rollbackOn = Exception.class)
-    public List<Boxscore> saveAllBoxscores(Model model) {
-        List<Boxscore> boxs = new ArrayList<>();
-        List<Game> games = gameService.getGames();
-        List<Game> releventGames = new ArrayList<>();
-        releventGames.addAll(games.parallelStream().filter(isInYear("2015")).collect(Collectors.toList()));
-        releventGames.addAll(games.parallelStream().filter(isInYear("2016")).collect(Collectors.toList()));
-        releventGames.addAll(games.parallelStream().filter(isInYear("2017")).collect(Collectors.toList()));
-        releventGames.addAll(games.parallelStream().filter(isInYear("2018")).collect(Collectors.toList()));
-        int i = 1;
-        for (Game game : releventGames) {
-            LOGGER.info("Parsing of boxscores at: {}%", ((float) i / releventGames.size()) * 100);
-            boxs.add(getBoxscore(game.getDate(), game.getGameId(), model));
-            i++;
-        }
-        return boxs;
-    }
-
-    private Predicate<Game> isInYear(String year) {
-        return g -> g.getDate().contains(year);
-    }
-
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "boxscore", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
     @ResponseBody
-    public Boxscore getBoxscore(@RequestParam String date, @RequestParam String gameId, Model model) {
+    public HashMap<String, Object> getBoxscore(@RequestParam String date, @RequestParam String gameId, Model model) {
         final String url = "http://data.nba.net/prod/v1/" + date + "/" + gameId + "_boxscore.json";
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -103,8 +72,8 @@ public class PlayerGameStatsController {
             }
             boxScoreMap.put("hTeamId", hTeam.get("teamId"));
             boxScoreMap.put("vTeamId", vTeam.get("teamId"));
-            box = boxscoreService.saveBoxscore(boxScoreMap);
-            return box;
+            // box = boxscoreService.saveBoxscore(boxScoreMap);
+            return boxScoreMap;
         } catch (Exception e) {
             LOGGER.info("{}", e.getMessage());
         }
