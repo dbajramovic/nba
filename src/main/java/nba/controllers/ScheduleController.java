@@ -61,6 +61,7 @@ public class ScheduleController {
         List<String> nicknames = teamService.getNicknamesOfTeams(true);
         for (int i = Integer.parseInt(Years.STARTYEAR.getValue()); i < Integer.parseInt(Years.ENDYEAR.getValue()); i++) {
             for (String nickname : nicknames) {
+                LOGGER.info("{} schedule for {} is being saved.", nickname, i);
                 ScheduleEntity ent = getSchedule(i + "", nickname, model);
                 if (ent != null) {
                     Schedule schedule = new Schedule();
@@ -165,7 +166,7 @@ public class ScheduleController {
         } catch (
 
         Exception e) {
-            System.out.println("SHIT:" + e.getMessage() + " YEAR:" + year + " TEAM:" + team);
+            LOGGER.error("SHIT:" + e.getMessage() + " YEAR:" + year + " TEAM:" + team);
         }
         return null;
     }

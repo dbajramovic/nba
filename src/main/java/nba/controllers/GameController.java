@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,13 +54,18 @@ public class GameController {
     public List<Game> saveAllGames(Model model) {
         List<Game> games = new ArrayList<>();
         Map<String, String> gamesToGet = gameService.getNewGames();
+        int numOfGames = gamesToGet.entrySet().parallelStream().filter(yearIsOK()).collect(Collectors.toList()).size();
         for (Map.Entry<String, String> entry : gamesToGet.entrySet()) {
             if (entry.getValue().startsWith("2016") || entry.getValue().startsWith("2017") || entry.getValue().startsWith("2018")) {
-                LOGGER.info("Saving game:{} on date:{}", entry.getKey(), entry.getValue());
+                LOGGER.info("Saving game:{}/{}({} on date:{})", games.size(), numOfGames, entry.getKey(), entry.getValue());
                 games.add(getGame(entry.getValue(), entry.getKey(), model));
             }
         }
         return games;
+    }
+
+    private Predicate<? super Entry<String, String>> yearIsOK() {
+        return p -> p.getValue().startsWith("2016") || p.getValue().startsWith("2017") || p.getValue().startsWith("2018");
     }
 
     @RequestMapping(value = "fullgame", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
