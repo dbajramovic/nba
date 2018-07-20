@@ -25,7 +25,9 @@ public class PlayDescriptionParser {
             }
             if (isConnectedAction) {
                 StringBuilder sb = new StringBuilder();
-                sb.append(playInfo.getConnectedAction());
+                if (playInfo.getConnectedAction() != null) {
+                    sb.append(playInfo.getConnectedAction());
+                }
                 sb.append(" ");
                 sb.append(word);
                 playInfo.setConnectedAction(sb.toString());

@@ -105,7 +105,7 @@ public class GameController {
             }
             return playService.savePlays(plays, gameId, date);
         } catch (Exception e) {
-            LOGGER.error("Failed");
+            LOGGER.error("Failed", e);
         }
         return null;
     }
