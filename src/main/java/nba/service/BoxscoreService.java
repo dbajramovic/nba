@@ -54,6 +54,8 @@ public class BoxscoreService {
         Boxscore box = new Boxscore();
         box.setTimesTied((String) boxScoreMap.get("timesTied"));
         box.setLeadChanges((String) boxScoreMap.get("leadChanges"));
+        box.setYear((String) boxScoreMap.get("year"));
+        box.setGameId((String) boxScoreMap.get("gameId"));
         TeamBoxscoreStat hTeam = new TeamBoxscoreStat();
         TeamBoxscoreStat vTeam = new TeamBoxscoreStat();
         Map<String, Object> hMap = (HashMap<String, Object>) boxScoreMap.get("hTeam");

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import nba.model.Player;
+import nba.model.PlayerGameHistory;
 import nba.model.Team;
 import nba.model.Years;
 import nba.service.PlayerService;
@@ -88,6 +89,12 @@ public class PlayersController {
     @ResponseBody
     public List<Team> teamsOfPlayer(@RequestParam final String name, @RequestParam final String surname) {
         return playersService.teamsOfPlayer(name, surname);
+    }
+
+    @RequestMapping(value = "player/history", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<PlayerGameHistory> playerHistory(@RequestParam final String name, @RequestParam final String surname) {
+        return playersService.playerHistory(name, surname);
     }
 
 }

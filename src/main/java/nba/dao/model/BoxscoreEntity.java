@@ -21,6 +21,8 @@ public class BoxscoreEntity {
 
     private String timesTied;
     private String leadChanges;
+    private String year;
+    private String gameId;
 
     @OneToOne
     @JoinColumn(name = "HTEAM")
@@ -71,6 +73,39 @@ public class BoxscoreEntity {
 
     public void setActivePlayers(List<PlayerGameStatsEntity> activePlayers) {
         this.activePlayers = activePlayers;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @return the year
+     */
+    public String getYear() {
+        return year;
+    }
+
+    /**
+     * @param year
+     *            the year to set
+     */
+    public void setYear(String year) {
+        this.year = year;
+    }
+
+    /**
+     * @return the gameId
+     */
+    public String getGameId() {
+        return gameId;
+    }
+
+    /**
+     * @param gameId the gameId to set
+     */
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
     }
 
 }

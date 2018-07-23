@@ -1,9 +1,11 @@
 package nba.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class PlayerGameStats {
+public class PlayerGameStats implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     private String personId;
     private String teamId;
     private String isOnCourt;

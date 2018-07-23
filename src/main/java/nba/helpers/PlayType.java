@@ -6,6 +6,7 @@ public enum PlayType {
     REBOUND("Rebound"),
     TURNOVER("Turnover"),
     ASSIST("Assist"),
+    FOUL("Foul"),
     LAYUP("Layup");
     // @formatter:on
 
@@ -36,13 +37,17 @@ public enum PlayType {
         if (value.equalsIgnoreCase(ASSIST.value)) {
             return ASSIST;
         }
+        if (value.equalsIgnoreCase(FOUL.value)) {
+            return FOUL;
+        }
         return null;
     }
 
     public static Boolean isPlayType(String value) {
         value = value.toUpperCase();
         if (value.equalsIgnoreCase(SHOT.value) || (value.equalsIgnoreCase(REBOUND.value)) || (value.equalsIgnoreCase(TURNOVER.value))
-                || (value.equalsIgnoreCase(ASSIST.value)) || (value.equalsIgnoreCase(LAYUP.value))) {
+                || (value.equalsIgnoreCase(ASSIST.value))
+                || (value.equalsIgnoreCase(LAYUP.value) || (value.equalsIgnoreCase(FOUL.value)))) {
             return true;
         }
         return false;

@@ -4,7 +4,7 @@ public enum Years {
     /** STARTYEAR */
     STARTYEAR("2012"),
     /** ENDYEAR */
-    ENDYEAR("2018");
+    ENDYEAR("2019");
 
     private final String value;
 

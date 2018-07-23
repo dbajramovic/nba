@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -15,34 +16,44 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import nba.dao.model.PlayerEntity;
+import nba.dao.model.PlayerGameStatsEntity;
 import nba.dao.model.PlayerTeamEntity;
 import nba.dao.model.TeamEntity;
 import nba.dao.repos.PlayerDAO;
+import nba.dao.repos.PlayerGameStatsDAO;
 import nba.dao.repos.PlayerTeamDAO;
 import nba.dao.repos.TeamDAO;
 import nba.helpers.MappingChecker;
+import nba.mapper.PlayerGameStatsMapper;
 import nba.mapper.PlayerMapper;
 import nba.mapper.TeamMapper;
 import nba.model.Player;
+import nba.model.PlayerGameHistory;
 import nba.model.Team;
 
 @Component
 public class PlayerService {
 
     @Autowired
-    PlayerDAO playerDAO;
+    private PlayerDAO playerDAO;
 
     @Autowired
-    TeamDAO teamDAO;
+    private TeamDAO teamDAO;
 
     @Autowired
-    PlayerTeamDAO playerTeamDAO;
+    private PlayerTeamDAO playerTeamDAO;
 
     @Autowired
-    TeamMapper teamMapper;
+    private PlayerGameStatsDAO playerGameStatsCustom;
 
     @Autowired
-    PlayerMapper playerMapper;
+    private TeamMapper teamMapper;
+
+    @Autowired
+    private PlayerMapper playerMapper;
+
+    @Autowired
+    private PlayerGameStatsMapper playerGameStatsMapper;
 
     public List<Team> teamsOfPlayer(String name, String surname) {
         Map<String, TeamEntity> map = new HashMap<>();
@@ -145,6 +156,37 @@ public class PlayerService {
             }
         }
         return playerList;
+    }
+
+    public List<PlayerGameHistory> playerHistory(String name, String surname) {
+        List<PlayerEntity> players = playerDAO.findByNameAndSurname(name, surname);
+        return getPlayersHistories(players);
+    }
+
+    private List<PlayerGameHistory> getPlayersHistories(List<PlayerEntity> players) {
+        List<PlayerGameHistory> hists = new ArrayList<>();
+        List<String> playerIds = players.parallelStream().map(PlayerEntity::getPersonId).distinct().collect(Collectors.toList());
+        List<PlayerGameStatsEntity> playerStats = playerGameStatsCustom.findByPersonIds(playerIds);
+        List<String> existingIds = new ArrayList<>();
+        for (PlayerEntity player : players) {
+            if (!existingIds.contains(player.getPersonId())) {
+                PlayerGameHistory hist = new PlayerGameHistory();
+                hist.setBoxscoreMap(new HashMap<>());
+                hist.setPlayer(playerMapper.entityToDto(player));
+                List<PlayerGameStatsEntity> indPlayerStats = playerStats.parallelStream().filter(isPersonId(player.getPersonId()))
+                        .collect(Collectors.toList());
+                for (PlayerGameStatsEntity indPlayerStat : indPlayerStats) {
+                    hist.getBoxscoreMap().put(indPlayerStat.getBoxscoreId(), playerGameStatsMapper.entityToDto(indPlayerStat));
+                }
+                hists.add(hist);
+                existingIds.add(player.getPersonId());
+            }
+        }
+        return hists;
+    }
+
+    private Predicate<? super PlayerGameStatsEntity> isPersonId(String playerId) {
+        return z -> z.getPersonId().equalsIgnoreCase(playerId);
     }
 
 }

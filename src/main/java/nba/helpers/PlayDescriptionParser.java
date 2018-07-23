@@ -45,7 +45,7 @@ public class PlayDescriptionParser {
                 sb.append(word);
                 playInfo.setDescription(sb.toString());
             }
-            if (word.contains(":")) {
+            if (word.contains(":") && !word.contains("Assist")) {
                 isOutcome = true;
             }
             if (word.contains("[") || word.contains("]")) {

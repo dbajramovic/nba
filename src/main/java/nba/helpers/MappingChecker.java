@@ -2,7 +2,7 @@ package nba.helpers;
 
 public class MappingChecker {
     private MappingChecker() {
-    };
+    }
 
     public static Boolean canBeParsedIntoLong(String string) {
         if (string == null || string.equals("") || string.replaceAll("[0-9]", "").trim().length() > 0 || string.trim().length() == 0) {

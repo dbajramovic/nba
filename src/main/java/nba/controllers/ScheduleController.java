@@ -162,11 +162,8 @@ public class ScheduleController {
                 }
             }
             return schEntity;
-
-        } catch (
-
-        Exception e) {
-            LOGGER.error("SHIT:" + e.getMessage() + " YEAR:" + year + " TEAM:" + team);
+        } catch (Exception e) {
+            LOGGER.error("SHIT:{} YEAR:{} TEAM:{}", e.getMessage(), year, team);
         }
         return null;
     }

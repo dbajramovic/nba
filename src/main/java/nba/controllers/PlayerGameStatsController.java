@@ -45,7 +45,7 @@ public class PlayerGameStatsController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "boxscore", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
     @ResponseBody
-    public HashMap<String, Object> getBoxscore(@RequestParam String date, @RequestParam String gameId, Model model) {
+    public Map<String, Object> getBoxscore(@RequestParam String date, @RequestParam String gameId, Model model) {
         final String url = "http://data.nba.net/prod/v1/" + date + "/" + gameId + "_boxscore.json";
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -60,11 +60,13 @@ public class PlayerGameStatsController {
             HashMap<String, Object> hTeam = new HashMap<>();
             HashMap<String, Object> vTeam = new HashMap<>();
             Boxscore box;
+            String year = "";
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (entry.getKey().equalsIgnoreCase("basicGameData")) {
                     HashMap<String, Object> basicGameData = (HashMap<String, Object>) entry.getValue();
                     hTeam = (HashMap<String, Object>) basicGameData.get("hTeam");
                     vTeam = (HashMap<String, Object>) basicGameData.get("vTeam");
+                    year = (String) basicGameData.get("year");
                 }
                 if (entry.getKey().equalsIgnoreCase("stats")) {
                     boxScoreMap = (HashMap<String, Object>) entry.getValue();
@@ -72,7 +74,9 @@ public class PlayerGameStatsController {
             }
             boxScoreMap.put("hTeamId", hTeam.get("teamId"));
             boxScoreMap.put("vTeamId", vTeam.get("teamId"));
-            // box = boxscoreService.saveBoxscore(boxScoreMap);
+            boxScoreMap.put("year", year);
+            boxScoreMap.put("gameId", gameId);
+            box = boxscoreService.saveBoxscore(boxScoreMap);
             return boxScoreMap;
         } catch (Exception e) {
             LOGGER.info("{}", e.getMessage());

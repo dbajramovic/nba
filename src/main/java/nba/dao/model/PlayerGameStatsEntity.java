@@ -60,6 +60,10 @@ public class PlayerGameStatsEntity {
         return personId;
     }
 
+    public Long getBoxscoreId() {
+        return this.boxscore.getId();
+    }
+
     public void setPersonId(String personId) {
         this.personId = personId;
     }
@@ -86,6 +90,10 @@ public class PlayerGameStatsEntity {
 
     public void setPoints(Long points) {
         this.points = points;
+    }
+
+    public PlayerGameStatsEntity getItself() {
+        return this;
     }
 
     public String getPos() {
