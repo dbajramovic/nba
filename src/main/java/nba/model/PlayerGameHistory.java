@@ -8,7 +8,7 @@ public class PlayerGameHistory implements Serializable {
     private static final long serialVersionUID = 1L;
     private Player player;
     private Map<Long, PlayerGameStats> boxscoreMap;
-    private Map<Long, PlayerGameStats> yearAverages;
+    private Map<String, PlayerGameStats> yearAverages;
 
     public Player getPlayer() {
         return player;
@@ -26,11 +26,11 @@ public class PlayerGameHistory implements Serializable {
         this.boxscoreMap = boxscoreMap;
     }
 
-    public Map<Long, PlayerGameStats> getYearAverages() {
+    public Map<String, PlayerGameStats> getYearAverages() {
         return yearAverages;
     }
 
-    public void setYearAverages(Map<Long, PlayerGameStats> yearAverages) {
+    public void setYearAverages(Map<String, PlayerGameStats> yearAverages) {
         this.yearAverages = yearAverages;
     }
 

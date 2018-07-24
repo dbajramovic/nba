@@ -37,6 +37,7 @@ public class PlayService {
         GameEntity game = gameDAO.findGameForGameIdAndDate(gameId, date);
         Game gameModel = gameMapper.entitytoDto(game, false);
         gameModel.setPlays(new ArrayList<>());
+        List<PlayEntity> playEnts = new ArrayList<>();
         for (LinkedHashMap<String, Object> t : plays) {
             PlayEntity play = new PlayEntity();
             if (t.get("event") != null) {
@@ -67,9 +68,10 @@ public class PlayService {
                 play.setPeriod((String) t.get("period"));
             }
             play.setGame(game);
-            playDAO.save(play);
+            playEnts.add(play);
             gameModel.getPlays().add(playMapper.entitytoDto(play));
         }
+        playDAO.saveAll(playEnts);
         return gameModel;
     }
 

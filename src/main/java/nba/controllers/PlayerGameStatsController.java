@@ -66,7 +66,7 @@ public class PlayerGameStatsController {
                     HashMap<String, Object> basicGameData = (HashMap<String, Object>) entry.getValue();
                     hTeam = (HashMap<String, Object>) basicGameData.get("hTeam");
                     vTeam = (HashMap<String, Object>) basicGameData.get("vTeam");
-                    year = (String) basicGameData.get("year");
+                    year = (String) basicGameData.get("seasonYear");
                 }
                 if (entry.getKey().equalsIgnoreCase("stats")) {
                     boxScoreMap = (HashMap<String, Object>) entry.getValue();
