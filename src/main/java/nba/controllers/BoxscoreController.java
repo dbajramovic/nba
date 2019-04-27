@@ -55,7 +55,7 @@ public class BoxscoreController {
         }
         LOGGER.info("Parsing of {} games", uniqueGameIds.entrySet().size());
         for (Map.Entry<String, Game> game : uniqueGameIds.entrySet()) {
-            LOGGER.info("Parsing of boxscores at: {}%", ((float) i / releventGames.size()) * 100);
+            LOGGER.info("Parsing of boxscores at: {}%", ((float) i / uniqueGameIds.entrySet().size()) * 100);
             boxs.add(boxscoreService
                     .saveBoxscore(playerGameStatsController.getBoxscore(game.getValue().getDate(), game.getValue().getGameId(), model)));
             i++;

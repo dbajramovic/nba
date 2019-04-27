@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +28,8 @@ import nba.model.TeamBoxscoreStat;
 
 @Component
 public class BoxscoreService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BoxscoreService.class);
 
     @Autowired
     PlayerGameStatsService pgsService;
@@ -74,6 +78,7 @@ public class BoxscoreService {
         if (MappingChecker.canBeParsedIntoLong((String) hMap.get("longestRun"))) {
             hTeam.setLongestRun(Long.parseLong((String) hMap.get("longestRun")));
         }
+        hTeam.setTeamId((String) boxScoreMap.get("hTeamId"));
         Map<String, Object> totalsHomeMap = (HashMap<String, Object>) hMap.get("totals");
         hTeam.setTotals(pgsService.mapPGS(totalsHomeMap));
 
@@ -93,6 +98,7 @@ public class BoxscoreService {
         if (MappingChecker.canBeParsedIntoLong((String) vMap.get("longestRun"))) {
             vTeam.setLongestRun(Long.parseLong((String) vMap.get("longestRun")));
         }
+        hTeam.setTeamId((String) boxScoreMap.get("vTeamId"));
         Map<String, Object> visitorsHomeMap = (HashMap<String, Object>) vMap.get("totals");
         vTeam.setTotals(pgsService.mapPGS(visitorsHomeMap));
         box.sethTeam(hTeam);
@@ -111,6 +117,8 @@ public class BoxscoreService {
         }
         TeamBoxscoreStatEntity hTeamEnt = teamBoxMapper.dtoToEntity(hTeam);
         TeamBoxscoreStatEntity vTeamEnt = teamBoxMapper.dtoToEntity(vTeam);
+        LOGGER.info("Getting TeamBoxscoreStatEntity  {}", hTeam.getTeamId());
+        LOGGER.info("Getting TeamBoxscoreStatEntity {}", hTeam.getTeamId());
         hTeamEnt.setBoxscore(boxEnt);
         vTeamEnt.setBoxscore(boxEnt);
         hTeamEnt.setTeamId((String) boxScoreMap.get("hTeamId"));

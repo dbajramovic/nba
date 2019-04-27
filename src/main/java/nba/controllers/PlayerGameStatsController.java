@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
-import nba.model.Boxscore;
 import nba.service.BoxscoreService;
 import nba.service.GameService;
 import nba.service.PlayerGameStatsService;
@@ -59,7 +58,7 @@ public class PlayerGameStatsController {
             HashMap<String, Object> boxScoreMap = new HashMap<>();
             HashMap<String, Object> hTeam = new HashMap<>();
             HashMap<String, Object> vTeam = new HashMap<>();
-            Boxscore box;
+            LOGGER.info("Getting boxscore for game: {}", gameId);
             String year = "";
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (entry.getKey().equalsIgnoreCase("basicGameData")) {
@@ -76,12 +75,12 @@ public class PlayerGameStatsController {
             boxScoreMap.put("vTeamId", vTeam.get("teamId"));
             boxScoreMap.put("year", year);
             boxScoreMap.put("gameId", gameId);
-            box = boxscoreService.saveBoxscore(boxScoreMap);
+            boxscoreService.saveBoxscore(boxScoreMap);
             return boxScoreMap;
         } catch (Exception e) {
             LOGGER.info("{}", e.getMessage());
+            throw e;
         }
-        return null;
     }
 
 }

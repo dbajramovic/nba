@@ -20,8 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
@@ -49,15 +48,17 @@ public class GameController {
     @Autowired
     GameService gameService;
 
-    @RequestMapping(value = "saveAllGames", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "saveAllGames", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public List<Game> saveAllGames(Model model) {
         List<Game> games = new ArrayList<>();
         Map<String, String> gamesToGet = gameService.getNewGames();
         int numOfGames = gamesToGet.entrySet().parallelStream().filter(yearIsOK()).collect(Collectors.toList()).size();
         for (Map.Entry<String, String> entry : gamesToGet.entrySet()) {
-            if (entry.getValue().startsWith("2016") || entry.getValue().startsWith("2017") || entry.getValue().startsWith("2018")) {
-                LOGGER.info("Saving game:{}/{}({} on date:{})", games.size(), numOfGames, entry.getKey(), entry.getValue());
+            if (entry.getValue().startsWith("2016") || entry.getValue().startsWith("2017") || entry.getValue().startsWith("2018")
+                    || entry.getValue().startsWith("2019")) {
+                LOGGER.info("Saving game:{}/{}({} on date:{})[{}%]", games.size(), numOfGames, entry.getKey(), entry.getValue(),
+                        (games.size() / (float) numOfGames) * 100);
                 games.add(getGame(entry.getValue(), entry.getKey(), model));
             }
         }
@@ -65,23 +66,24 @@ public class GameController {
     }
 
     private Predicate<? super Entry<String, String>> yearIsOK() {
-        return p -> p.getValue().startsWith("2016") || p.getValue().startsWith("2017") || p.getValue().startsWith("2018");
+        return p -> p.getValue().startsWith("2016") || p.getValue().startsWith("2017") || p.getValue().startsWith("2018")
+                || p.getValue().startsWith("2019");
     }
 
-    @RequestMapping(value = "fullgame", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "fullgame", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public Game getFullGame(@RequestParam Long gameId, Model model) {
         return gameService.getFullGame(gameId);
     }
 
-    @RequestMapping(value = "digestGame", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "digestGame", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public List<PlayInfo> digestGame(@RequestParam Long gameId, Model model) {
         return gameService.digestGame(gameId);
     }
 
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "game", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "game", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public Game getGame(@RequestParam String date, @RequestParam String gameId, Model model) {
         final String url = "http://data.nba.net/json/cms/noseason/game/" + date + "/" + gameId + "/pbp_all.json";
@@ -97,7 +99,6 @@ public class GameController {
             ArrayList<LinkedHashMap<String, Object>> plays = new ArrayList<>();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (entry.getKey().equalsIgnoreCase("sports_content")) {
-                    @SuppressWarnings("unchecked")
                     Map<String, Object> playerMap = (HashMap<String, Object>) entry.getValue();
                     LinkedHashMap<String, Object> gameMap = (LinkedHashMap<String, Object>) playerMap.get("game");
                     plays = (ArrayList<LinkedHashMap<String, Object>>) gameMap.get("play");

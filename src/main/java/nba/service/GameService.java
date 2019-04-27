@@ -13,8 +13,10 @@ import com.google.common.collect.Lists;
 import nba.dao.model.GameEntity;
 import nba.dao.model.PlayEntity;
 import nba.dao.model.PlayInfo;
+import nba.dao.model.ScheduleEntity;
 import nba.dao.repos.GameDAO;
 import nba.dao.repos.PlayDAO;
+import nba.dao.repos.ScheduleDAO;
 import nba.helpers.PlayDescriptionParser;
 import nba.mapper.GameMapper;
 import nba.model.Game;
@@ -27,6 +29,9 @@ public class GameService {
 
     @Autowired
     PlayDAO playDAO;
+
+    @Autowired
+    ScheduleDAO scheduleDAO;
 
     @Autowired
     GameMapper gameMapper;
@@ -58,6 +63,55 @@ public class GameService {
 
     public List<Game> getGames() {
         return gameMapper.entitesToDtos(Lists.newArrayList(gameDAO.findAll()), false);
+    }
+
+    public GameEntity createGameEntity(Map<String, Object> t, String team, String year, List<ScheduleEntity> schedules,
+            ScheduleEntity schEntity) {
+        GameEntity ent = new GameEntity();
+        if (t.get("game_url") != null) {
+            ent.setGameUrl((String) t.get("game_url"));
+        }
+        if (t.get("season_id") != null) {
+            ent.setSeasonId((String) t.get("season_id"));
+        }
+        if (t.get("id") != null) {
+            ent.setGameId((String) t.get("id"));
+        }
+        if (t.get("date") != null) {
+            ent.setDate((String) t.get("date"));
+        }
+        if (t.get("time") != null) {
+            ent.setTime((String) t.get("time"));
+        }
+        if (t.get("arena") != null) {
+            ent.setArena((String) t.get("arena"));
+        }
+        if (t.get("city") != null) {
+            ent.setCity((String) t.get("city"));
+        }
+        if (t.get("state") != null) {
+            ent.setState((String) t.get("state"));
+        }
+        if (t.get("country") != null) {
+            ent.setCountry((String) t.get("country"));
+        }
+        if (t.get("home_start_time") != null) {
+            ent.setHomeStartTime((String) t.get("home_start_time"));
+        }
+        if (t.get("home_start_date") != null) {
+            ent.setHomeStartDate((String) t.get("home_start_date"));
+        }
+        if (t.get("visitor_start_date") != null) {
+            ent.setVisitorStartDate((String) t.get("visitor_start_date"));
+        }
+        if (t.get("visitor_start_time") != null) {
+            ent.setVisitorStartTime((String) t.get("visitor_start_time"));
+        }
+        if (t.get("tnt_ot") != null) {
+            ent.setTntOt((String) t.get("tnt_ot"));
+        }
+        ent.setSchedule(schEntity);
+        return ent;
     }
 
 }

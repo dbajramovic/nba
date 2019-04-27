@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,7 +54,7 @@ public class PlayersController {
     }
 
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "roster", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "roster", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public List<Player> getRoster(@RequestParam String year, Model model) {
         final String url = "http://data.nba.net/prod/v1/" + year + "/players.json";
@@ -85,13 +86,13 @@ public class PlayersController {
         return Collections.emptyList();
     }
 
-    @RequestMapping(value = "teams/player", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "teams/player", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public List<Team> teamsOfPlayer(@RequestParam final String name, @RequestParam final String surname) {
         return playersService.teamsOfPlayer(name, surname);
     }
 
-    @RequestMapping(value = "player/history", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "player/history", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public List<PlayerGameHistory> playerHistory(@RequestParam final String name, @RequestParam final String surname) {
         return playersService.playerHistory(name, surname);

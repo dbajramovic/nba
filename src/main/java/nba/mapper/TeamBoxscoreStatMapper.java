@@ -16,6 +16,7 @@ public class TeamBoxscoreStatMapper {
         boxStat.setFastBreakPoints(boxEnt.getFastBreakPoints());
         boxStat.setLongestRun(boxEnt.getLongestRun());
         boxStat.setSecondChancePoints(boxEnt.getSecondChancePoints());
+        boxStat.setTeamId(boxEnt.getTeamId());
         return boxStat;
     }
 
@@ -25,6 +26,7 @@ public class TeamBoxscoreStatMapper {
         boxStat.setFastBreakPoints(boxEnt.getFastBreakPoints());
         boxStat.setLongestRun(boxEnt.getLongestRun());
         boxStat.setSecondChancePoints(boxEnt.getSecondChancePoints());
+        boxStat.setTeamId(boxEnt.getTeamId());
         return boxStat;
     }
 

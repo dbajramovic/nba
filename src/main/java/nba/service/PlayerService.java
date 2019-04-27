@@ -84,6 +84,8 @@ public class PlayerService {
     @Transactional(rollbackOn = Exception.class)
     public List<Player> savePlayers(ArrayList<LinkedHashMap<String, Object>> players, String year) {
         List<Player> playerList = new ArrayList<>();
+        List<PlayerEntity> playerEnts = new ArrayList<>();
+        List<PlayerTeamEntity> playerTeamEnts = new ArrayList<>();
         for (LinkedHashMap<String, Object> t : players) {
             PlayerEntity ent = new PlayerEntity();
 
@@ -146,6 +148,7 @@ public class PlayerService {
             }
             ent.setYear(year);
             PlayerEntity player = playerDAO.save(ent);
+            playerEnts.add(player);
             playerList.add(playerMapper.entityToDto(player));
             if (t.get("teams") != null) {
                 @SuppressWarnings("unchecked")
@@ -159,10 +162,12 @@ public class PlayerService {
                     playerTeam.setTeam(team);
                     playerTeam.setPlayerRefId(player.getPersonId());
                     playerTeam.setTeamRefId(team.getTeamId());
-                    playerTeamDAO.save(playerTeam);
+                    playerTeamEnts.add(playerTeam);
                 }
             }
         }
+        playerDAO.saveAll(playerEnts);
+        playerTeamDAO.saveAll(playerTeamEnts);
         return playerList;
     }
 
@@ -213,26 +218,34 @@ public class PlayerService {
             }
         }
         for (Map.Entry<String, List<PlayerGameStats>> entry : yearAverages.entrySet()) {
-            PlayerGameStats year = new PlayerGameStats();
-            Long totalAss = 0L;
-            Long totalBlk = 0L;
-            Long totalDefReb = 0L;
-            Long totalFga = 0L;
-            Long totalFgm = 0L;
-            Long totalFta = 0L;
-            Long totalFtm = 0L;
-            Long totalTpa = 0L;
-            Long totalTpm = 0L;
-            Long totalOffReb = 0L;
-            Long totalFouls = 0L;
-            Long totalPts = 0L;
-            Long totalStl = 0L;
-            Long totalReb = 0L;
-            Long totalTrn = 0L;
-            BigDecimal totalFgp = BigDecimal.ZERO;
-            BigDecimal totalTpp = BigDecimal.ZERO;
-            BigDecimal totalFtp = BigDecimal.ZERO;
-            for (PlayerGameStats pgs : entry.getValue()) {
+            addYearOfPlayer(yearAveragesFinal, entry);
+        }
+        hists.get(0).setYearAverages(yearAveragesFinal);
+        return hists;
+    }
+
+    private void addYearOfPlayer(Map<String, PlayerGameStats> yearAveragesFinal, Map.Entry<String, List<PlayerGameStats>> entry) {
+        PlayerGameStats year = new PlayerGameStats();
+        Long totalAss = 0L;
+        Long totalBlk = 0L;
+        Long totalDefReb = 0L;
+        Long totalFga = 0L;
+        Long totalFgm = 0L;
+        Long totalFta = 0L;
+        Long totalFtm = 0L;
+        Long totalTpa = 0L;
+        Long totalTpm = 0L;
+        Long totalOffReb = 0L;
+        Long totalFouls = 0L;
+        Long totalPts = 0L;
+        Long totalStl = 0L;
+        Long totalReb = 0L;
+        Long totalTrn = 0L;
+        BigDecimal totalFgp = BigDecimal.ZERO;
+        BigDecimal totalTpp = BigDecimal.ZERO;
+        BigDecimal totalFtp = BigDecimal.ZERO;
+        for (PlayerGameStats pgs : entry.getValue()) {
+            if (pgs != null) {
                 totalAss += pgs.getAssists();
                 totalBlk += pgs.getBlocks();
                 totalDefReb += pgs.getDefReb();
@@ -251,30 +264,27 @@ public class PlayerService {
                 totalFgp = totalFgp.add(pgs.getFgp());
                 totalFtp = totalFtp.add(pgs.getFtp());
                 totalTpp = totalTpp.add(pgs.getTpp());
-                System.out.println(pgs.toString());
             }
-            year.setAssists(totalAss);
-            year.setBlocks(totalBlk);
-            year.setDefReb(totalDefReb);
-            year.setFga(totalFga);
-            year.setFgm(totalFgm);
-            year.setFgp(totalFgp);
-            year.setFta(totalFta);
-            year.setFtm(totalFtm);
-            year.setFtp(totalFtp);
-            year.setOffReb(totalOffReb);
-            year.setpFouls(totalFouls);
-            year.setPoints(totalPts);
-            year.setSteals(totalStl);
-            year.setTotReb(totalReb);
-            year.setTpa(totalTpa);
-            year.setTpm(totalTpm);
-            year.setTpp(totalTpp);
-            year.setTurnovers(totalTrn);
-            yearAveragesFinal.put(entry.getKey(), year);
         }
-        hists.get(0).setYearAverages(yearAveragesFinal);
-        return hists;
+        year.setAssists(totalAss);
+        year.setBlocks(totalBlk);
+        year.setDefReb(totalDefReb);
+        year.setFga(totalFga);
+        year.setFgm(totalFgm);
+        year.setFgp(totalFgp);
+        year.setFta(totalFta);
+        year.setFtm(totalFtm);
+        year.setFtp(totalFtp);
+        year.setOffReb(totalOffReb);
+        year.setpFouls(totalFouls);
+        year.setPoints(totalPts);
+        year.setSteals(totalStl);
+        year.setTotReb(totalReb);
+        year.setTpa(totalTpa);
+        year.setTpm(totalTpm);
+        year.setTpp(totalTpp);
+        year.setTurnovers(totalTrn);
+        yearAveragesFinal.put(entry.getKey(), year);
     }
 
     private Predicate<? super PlayerGameStatsEntity> isPersonId(String playerId) {

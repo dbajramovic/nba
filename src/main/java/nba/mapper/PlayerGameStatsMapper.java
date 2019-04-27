@@ -12,12 +12,35 @@ import nba.model.PlayerGameStats;
 public class PlayerGameStatsMapper {
     public PlayerGameStats entityToDto(PlayerGameStatsEntity ent) {
         PlayerGameStats pgs = new PlayerGameStats();
-        pgs.setAssists(ent.getAssists());
-        pgs.setBlocks(ent.getBlocks());
-        pgs.setDefReb(ent.getDefReb());
-        pgs.setDnp(ent.getDnp());
-        pgs.setFga(ent.getFga());
-        pgs.setFgm(ent.getFgm());
+        if (ent.getAssists() != null) {
+            pgs.setAssists(ent.getAssists());
+        } else {
+            pgs.setAssists(0L);
+        }
+        if (ent.getBlocks() != null) {
+            pgs.setBlocks(ent.getBlocks());
+        } else {
+            pgs.setBlocks(0L);
+        }
+        if (ent.getDefReb() != null) {
+            pgs.setDefReb(ent.getDefReb());
+        } else {
+            pgs.setDefReb(0L);
+        }
+        if (ent.getDnp() != null) {
+            pgs.setDnp(ent.getDnp());
+        }
+        if (ent.getFga() != null) {
+            pgs.setFga(ent.getFga());
+        } else {
+            pgs.setFga(0L);
+        }
+
+        if (ent.getFgm() != null) {
+            pgs.setFgm(ent.getFgm());
+        } else {
+            pgs.setFgm(0L);
+        }
         pgs.setFgp(ent.getFgp());
         pgs.setFta(ent.getFta());
         pgs.setFtm(ent.getFtm());

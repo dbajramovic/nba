@@ -46,6 +46,7 @@ public class TeamService {
 
     public List<Team> saveTeams(List<LinkedHashMap<String, Object>> teams, String year) {
         List<Team> teamList = new ArrayList<>();
+        List<TeamEntity> teamEnts = new ArrayList<>();
         for (LinkedHashMap<String, Object> t : teams) {
             TeamEntity ent = new TeamEntity();
             if (t.get("altCityName") != null) {
@@ -85,9 +86,10 @@ public class TeamService {
                 ent.setConfName((String) t.get("confName"));
             }
             ent.setYear(year);
-            teamDAO.save(ent);
+            teamEnts.add(ent);
             teamList.add(teamMapper.entityToDto(ent));
         }
+        teamDAO.saveAll(teamEnts);
         return teamList;
 
     }
