@@ -31,6 +31,12 @@ public class BoxscoreService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BoxscoreService.class);
 
+    private static final String FASTBREAKPOINTS = "fastBreakPoints";
+    private static final String LONGESTRUN = "longestRun";
+    private static final String POINTSINTPAINT = "pointsInPaint";
+    private static final String BIGGESTLEAD = "biggestLead";
+    private static final String SECONDCHANCEPOINTS = "secondChancePoints";
+
     @Autowired
     PlayerGameStatsService pgsService;
 
@@ -63,40 +69,40 @@ public class BoxscoreService {
         TeamBoxscoreStat hTeam = new TeamBoxscoreStat();
         TeamBoxscoreStat vTeam = new TeamBoxscoreStat();
         Map<String, Object> hMap = (HashMap<String, Object>) boxScoreMap.get("hTeam");
-        if (MappingChecker.canBeParsedIntoLong((String) hMap.get("fastBreakPoints"))) {
-            hTeam.setFastBreakPoints(Long.parseLong((String) hMap.get("fastBreakPoints")));
+        if (MappingChecker.canBeParsedIntoLong((String) hMap.get(FASTBREAKPOINTS))) {
+            hTeam.setFastBreakPoints(Long.parseLong((String) hMap.get(FASTBREAKPOINTS)));
         }
-        if (MappingChecker.canBeParsedIntoLong((String) hMap.get("pointsInPaint"))) {
-            hTeam.setPointsInPaint(Long.parseLong((String) hMap.get("pointsInPaint")));
+        if (MappingChecker.canBeParsedIntoLong((String) hMap.get(POINTSINTPAINT))) {
+            hTeam.setPointsInPaint(Long.parseLong((String) hMap.get(POINTSINTPAINT)));
         }
-        if (MappingChecker.canBeParsedIntoLong((String) hMap.get("biggestLead"))) {
-            hTeam.setBiggestLead(Long.parseLong((String) hMap.get("biggestLead")));
+        if (MappingChecker.canBeParsedIntoLong((String) hMap.get(BIGGESTLEAD))) {
+            hTeam.setBiggestLead(Long.parseLong((String) hMap.get(BIGGESTLEAD)));
         }
-        if (MappingChecker.canBeParsedIntoLong((String) hMap.get("secondChancePoints"))) {
-            hTeam.setSecondChancePoints(Long.parseLong((String) hMap.get("secondChancePoints")));
+        if (MappingChecker.canBeParsedIntoLong((String) hMap.get(SECONDCHANCEPOINTS))) {
+            hTeam.setSecondChancePoints(Long.parseLong((String) hMap.get(SECONDCHANCEPOINTS)));
         }
-        if (MappingChecker.canBeParsedIntoLong((String) hMap.get("longestRun"))) {
-            hTeam.setLongestRun(Long.parseLong((String) hMap.get("longestRun")));
+        if (MappingChecker.canBeParsedIntoLong((String) hMap.get(LONGESTRUN))) {
+            hTeam.setLongestRun(Long.parseLong((String) hMap.get(LONGESTRUN)));
         }
         hTeam.setTeamId((String) boxScoreMap.get("hTeamId"));
         Map<String, Object> totalsHomeMap = (HashMap<String, Object>) hMap.get("totals");
         hTeam.setTotals(pgsService.mapPGS(totalsHomeMap));
 
         Map<String, Object> vMap = (HashMap<String, Object>) boxScoreMap.get("vTeam");
-        if (MappingChecker.canBeParsedIntoLong((String) vMap.get("fastBreakPoints"))) {
-            vTeam.setFastBreakPoints(Long.parseLong((String) vMap.get("fastBreakPoints")));
+        if (MappingChecker.canBeParsedIntoLong((String) vMap.get(FASTBREAKPOINTS))) {
+            vTeam.setFastBreakPoints(Long.parseLong((String) vMap.get(FASTBREAKPOINTS)));
         }
-        if (MappingChecker.canBeParsedIntoLong((String) vMap.get("pointsInPaint"))) {
-            vTeam.setPointsInPaint(Long.parseLong((String) vMap.get("pointsInPaint")));
+        if (MappingChecker.canBeParsedIntoLong((String) vMap.get(POINTSINTPAINT))) {
+            vTeam.setPointsInPaint(Long.parseLong((String) vMap.get(POINTSINTPAINT)));
         }
-        if (MappingChecker.canBeParsedIntoLong((String) vMap.get("biggestLead"))) {
-            vTeam.setBiggestLead(Long.parseLong((String) vMap.get("biggestLead")));
+        if (MappingChecker.canBeParsedIntoLong((String) vMap.get(BIGGESTLEAD))) {
+            vTeam.setBiggestLead(Long.parseLong((String) vMap.get(BIGGESTLEAD)));
         }
-        if (MappingChecker.canBeParsedIntoLong((String) vMap.get("secondChancePoints"))) {
-            vTeam.setSecondChancePoints(Long.parseLong((String) vMap.get("secondChancePoints")));
+        if (MappingChecker.canBeParsedIntoLong((String) vMap.get(SECONDCHANCEPOINTS))) {
+            vTeam.setSecondChancePoints(Long.parseLong((String) vMap.get(SECONDCHANCEPOINTS)));
         }
-        if (MappingChecker.canBeParsedIntoLong((String) vMap.get("longestRun"))) {
-            vTeam.setLongestRun(Long.parseLong((String) vMap.get("longestRun")));
+        if (MappingChecker.canBeParsedIntoLong((String) vMap.get(LONGESTRUN))) {
+            vTeam.setLongestRun(Long.parseLong((String) vMap.get(LONGESTRUN)));
         }
         hTeam.setTeamId((String) boxScoreMap.get("vTeamId"));
         Map<String, Object> visitorsHomeMap = (HashMap<String, Object>) vMap.get("totals");
@@ -117,7 +123,7 @@ public class BoxscoreService {
         }
         TeamBoxscoreStatEntity hTeamEnt = teamBoxMapper.dtoToEntity(hTeam);
         TeamBoxscoreStatEntity vTeamEnt = teamBoxMapper.dtoToEntity(vTeam);
-        LOGGER.info("Getting TeamBoxscoreStatEntity  {}", hTeam.getTeamId());
+        LOGGER.info("Getting TeamBoxscoreStatEntity {}", hTeam.getTeamId());
         LOGGER.info("Getting TeamBoxscoreStatEntity {}", hTeam.getTeamId());
         hTeamEnt.setBoxscore(boxEnt);
         vTeamEnt.setBoxscore(boxEnt);

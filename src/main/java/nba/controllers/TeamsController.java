@@ -18,8 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
@@ -30,6 +29,7 @@ import nba.dao.repos.TeamDAO;
 import nba.mapper.TeamMapper;
 import nba.model.Schedule;
 import nba.model.Team;
+import nba.model.TeamRoster;
 import nba.model.Years;
 import nba.service.TeamService;
 
@@ -53,7 +53,7 @@ public class TeamsController {
     @Autowired
     TeamDAO teamDAO;
 
-    @RequestMapping(value = "saveAllTeams", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "saveAllTeams", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public List<Team> saveAllTeams(Model model) {
         List<Team> teams = new ArrayList<>();
@@ -64,14 +64,26 @@ public class TeamsController {
         return teams;
     }
 
-    @RequestMapping(value = "teamSchedule", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "teamSchedule", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public Schedule teamSchedule(@RequestParam final String team, @RequestParam final String year, Model model) {
         return teamService.teamSchedule(team, year);
     }
 
+    @GetMapping(value = "teams", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<Team> getAllTeams(Model model) {
+        return teamService.getAllTeams();
+    }
+
+    @GetMapping(value = "team/roster", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<TeamRoster> getTeamRoster(@RequestParam final String team, @RequestParam final String year) {
+        return teamService.getTeamRoster(team, year);
+    }
+
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "saveTeams", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "saveTeams", produces = "application/json; charset=UTF-8")
     public List<Team> saveTeams(@RequestParam String year, Model model) {
         final String url = "http://data.nba.net/prod/v1/" + year + "/teams.json";
         try {
@@ -86,7 +98,6 @@ public class TeamsController {
             List<LinkedHashMap<String, Object>> teams = new ArrayList<>();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (entry.getKey().equalsIgnoreCase("league")) {
-                    @SuppressWarnings("unchecked")
                     Map<String, Object> playerMap = (HashMap<String, Object>) entry.getValue();
                     for (Object o : playerMap.entrySet()) {
                         HashMap.Entry<String, Object> oMap = (HashMap.Entry<String, Object>) o;
@@ -97,7 +108,7 @@ public class TeamsController {
             }
             return teamService.saveTeams(teams, year);
         } catch (Exception e) {
-            System.out.println("SHIT:" + e.getMessage());
+            LOGGER.info("SHIT:{}", e.getMessage());
         }
         return Collections.emptyList();
     }

@@ -19,8 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
@@ -42,7 +40,7 @@ public class PlayersController {
     @Autowired
     PlayerService playersService;
 
-    @RequestMapping(value = "saveAllPlayers", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "saveAllPlayers", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public List<Player> saveAllPlayers(Model model) {
         List<Player> players = new ArrayList<>();
@@ -70,7 +68,6 @@ public class PlayersController {
             ArrayList<LinkedHashMap<String, Object>> players = new ArrayList<>();
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (entry.getKey().equalsIgnoreCase("league")) {
-                    @SuppressWarnings("unchecked")
                     Map<String, Object> playerMap = (HashMap<String, Object>) entry.getValue();
                     for (Object o : playerMap.entrySet()) {
                         HashMap.Entry<String, Object> oMap = (HashMap.Entry<String, Object>) o;
@@ -81,7 +78,7 @@ public class PlayersController {
             }
             return playersService.savePlayers(players, year);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            LOGGER.info("{}", e.getMessage());
         }
         return Collections.emptyList();
     }
@@ -90,6 +87,12 @@ public class PlayersController {
     @ResponseBody
     public List<Team> teamsOfPlayer(@RequestParam final String name, @RequestParam final String surname) {
         return playersService.teamsOfPlayer(name, surname);
+    }
+
+    @GetMapping(value = "player", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<Player> getAllPlayers() {
+        return playersService.getAllPlayers();
     }
 
     @GetMapping(value = "player/history", produces = "application/json; charset=UTF-8")

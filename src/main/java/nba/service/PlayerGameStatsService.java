@@ -14,7 +14,6 @@ public class PlayerGameStatsService {
     public PlayerGameStats mapPGS(Map<String, Object> map) {
         PlayerGameStats pgs = new PlayerGameStats();
         if (map.get("personId") != null) {
-
             pgs.setPersonId((String) map.get("personId"));
         }
         if (map.get("teamId") != null) {

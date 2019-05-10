@@ -7,4 +7,6 @@ import nba.dao.model.PlayerEntity;
 public interface PlayerRepositoryCustom {
     public List<PlayerEntity> findByNameAndSurname(String name, String surname);
 
+    List<PlayerEntity> findByTeamId(String team);
+
 }

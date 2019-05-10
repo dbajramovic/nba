@@ -22,6 +22,14 @@ public class TeamRepositoryCustomImpl implements TeamRepositoryCustom {
     }
 
     @Override
+    public TeamEntity findByTeamNickname(String nickname, String year) {
+        String query = "select team from TeamEntity team where team.nickname = :nickname and team.year = :year";
+        TypedQuery<TeamEntity> query1 = entityManager.createQuery(query, TeamEntity.class).setParameter("nickname", nickname)
+                .setParameter("year", year).setMaxResults(1);
+        return query1.getSingleResult();
+    }
+
+    @Override
     public List<TeamEntity> findTeamsOfPlayer(String player) {
         String query = "select team from TeamEntity team, PlayerTeamEntity plTeam where team.teamId = plTeam.teamRefId and plTeam.playerRefId = :player";
         TypedQuery<TeamEntity> query1 = entityManager.createQuery(query, TeamEntity.class).setParameter("player", player);

@@ -11,4 +11,6 @@ public interface TeamRepositoryCustom {
 
     public List<String> getNicknames(Boolean onlyNbaFranchises);
 
+    TeamEntity findByTeamNickname(String nickname, String year);
+
 }

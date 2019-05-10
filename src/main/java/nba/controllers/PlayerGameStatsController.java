@@ -14,8 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
@@ -42,7 +41,7 @@ public class PlayerGameStatsController {
     GameService gameService;
 
     @SuppressWarnings("unchecked")
-    @RequestMapping(value = "boxscore", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = "boxscore", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public Map<String, Object> getBoxscore(@RequestParam String date, @RequestParam String gameId, Model model) {
         final String url = "http://data.nba.net/prod/v1/" + date + "/" + gameId + "_boxscore.json";

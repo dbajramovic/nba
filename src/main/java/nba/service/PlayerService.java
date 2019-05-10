@@ -87,66 +87,7 @@ public class PlayerService {
         List<PlayerEntity> playerEnts = new ArrayList<>();
         List<PlayerTeamEntity> playerTeamEnts = new ArrayList<>();
         for (LinkedHashMap<String, Object> t : players) {
-            PlayerEntity ent = new PlayerEntity();
-
-            if (t.get("firstName") != null) {
-                ent.setFirstName((String) t.get("firstName"));
-            }
-            if (t.get("lastName") != null) {
-                ent.setLastName((String) t.get("lastName"));
-            }
-            if (t.get("personId") != null) {
-                ent.setPersonId((String) t.get("personId"));
-            }
-            if (t.get("jersey") != null) {
-                ent.setJersey((String) t.get("jersey"));
-            }
-            if (t.get("pos") != null) {
-                ent.setPos((String) t.get("pos"));
-            }
-            if (t.get("isActive") != null) {
-                ent.setIsActive((Boolean) t.get("isActive"));
-            }
-            if (MappingChecker.canBeParsedIntoLong((String) t.get("heightFeet"))) {
-                ent.setHeightFeet(Long.parseLong((String) t.get("heightFeet")));
-            }
-            if (MappingChecker.canBeParsedIntoLong((String) t.get("heightInches"))) {
-                ent.setHeightInches(Long.parseLong((String) t.get("heightInches")));
-            }
-            if (MappingChecker.canBeParsedIntoBigDecimal((String) t.get("heightMeters"))) {
-                ent.setHeightMeters(new BigDecimal((String) t.get("heightMeters")));
-            }
-            if (MappingChecker.canBeParsedIntoLong((String) t.get("weightPounds"))) {
-                ent.setWeightPounds(Long.parseLong((String) t.get("weightPounds")));
-            }
-            if (MappingChecker.canBeParsedIntoBigDecimal((String) t.get("weightKilograms"))) {
-                ent.setWeightKilograms(new BigDecimal((String) t.get("weightKilograms")));
-            }
-            if (t.get("dateOfBirthUTC") != null && !((String) t.get("dateOfBirthUTC")).equalsIgnoreCase("")) {
-                String dob = (String) t.get("dateOfBirthUTC");
-                String yearDob = dob.split("-")[0];
-                String monthDob = dob.split("-")[1];
-                String dayDob = dob.split("-")[2];
-                LocalDateTime dateTime = LocalDateTime.now().withYear(Integer.parseInt(yearDob)).withMonth(Integer.parseInt(monthDob))
-                        .withDayOfMonth(Integer.parseInt(dayDob));
-                ent.setDateOfBirthUTC(dateTime);
-            }
-            if (t.get("nbaDebutYear") != null) {
-                ent.setNbaDebutYear((String) t.get("nbaDebutYear"));
-            }
-            if (MappingChecker.canBeParsedIntoLong((String) t.get("yearsPro"))) {
-                ent.setYearsPro(Long.parseLong((String) t.get("yearsPro")));
-            }
-            if (t.get("collegeName") != null) {
-                ent.setCollegeName((String) t.get("collegeName"));
-            }
-            if (t.get("lastAffliation") != null) {
-                ent.setLastAffliation((String) t.get("lastAffliation"));
-            }
-            if (t.get("country") != null) {
-                ent.setCountry((String) t.get("country"));
-            }
-            ent.setYear(year);
+            PlayerEntity ent = mapPlayer(year, t);
             PlayerEntity player = playerDAO.save(ent);
             playerEnts.add(player);
             playerList.add(playerMapper.entityToDto(player));
@@ -171,6 +112,70 @@ public class PlayerService {
         return playerList;
     }
 
+    private PlayerEntity mapPlayer(String year, LinkedHashMap<String, Object> t) {
+        PlayerEntity ent = new PlayerEntity();
+
+        if (t.get("firstName") != null) {
+            ent.setFirstName((String) t.get("firstName"));
+        }
+        if (t.get("lastName") != null) {
+            ent.setLastName((String) t.get("lastName"));
+        }
+        if (t.get("personId") != null) {
+            ent.setPersonId((String) t.get("personId"));
+        }
+        if (t.get("jersey") != null) {
+            ent.setJersey((String) t.get("jersey"));
+        }
+        if (t.get("pos") != null) {
+            ent.setPos((String) t.get("pos"));
+        }
+        if (t.get("isActive") != null) {
+            ent.setIsActive((Boolean) t.get("isActive"));
+        }
+        if (MappingChecker.canBeParsedIntoLong((String) t.get("heightFeet"))) {
+            ent.setHeightFeet(Long.parseLong((String) t.get("heightFeet")));
+        }
+        if (MappingChecker.canBeParsedIntoLong((String) t.get("heightInches"))) {
+            ent.setHeightInches(Long.parseLong((String) t.get("heightInches")));
+        }
+        if (MappingChecker.canBeParsedIntoBigDecimal((String) t.get("heightMeters"))) {
+            ent.setHeightMeters(new BigDecimal((String) t.get("heightMeters")));
+        }
+        if (MappingChecker.canBeParsedIntoLong((String) t.get("weightPounds"))) {
+            ent.setWeightPounds(Long.parseLong((String) t.get("weightPounds")));
+        }
+        if (MappingChecker.canBeParsedIntoBigDecimal((String) t.get("weightKilograms"))) {
+            ent.setWeightKilograms(new BigDecimal((String) t.get("weightKilograms")));
+        }
+        if (t.get("dateOfBirthUTC") != null && !((String) t.get("dateOfBirthUTC")).equalsIgnoreCase("")) {
+            String dob = (String) t.get("dateOfBirthUTC");
+            String yearDob = dob.split("-")[0];
+            String monthDob = dob.split("-")[1];
+            String dayDob = dob.split("-")[2];
+            LocalDateTime dateTime = LocalDateTime.now().withYear(Integer.parseInt(yearDob)).withMonth(Integer.parseInt(monthDob))
+                    .withDayOfMonth(Integer.parseInt(dayDob));
+            ent.setDateOfBirthUTC(dateTime);
+        }
+        if (t.get("nbaDebutYear") != null) {
+            ent.setNbaDebutYear((String) t.get("nbaDebutYear"));
+        }
+        if (MappingChecker.canBeParsedIntoLong((String) t.get("yearsPro"))) {
+            ent.setYearsPro(Long.parseLong((String) t.get("yearsPro")));
+        }
+        if (t.get("collegeName") != null) {
+            ent.setCollegeName((String) t.get("collegeName"));
+        }
+        if (t.get("lastAffliation") != null) {
+            ent.setLastAffliation((String) t.get("lastAffliation"));
+        }
+        if (t.get("country") != null) {
+            ent.setCountry((String) t.get("country"));
+        }
+        ent.setYear(year);
+        return ent;
+    }
+
     public List<PlayerGameHistory> playerHistory(String name, String surname) {
         List<PlayerEntity> players = playerDAO.findByNameAndSurname(name, surname);
         return getPlayersHistories(players);
@@ -185,19 +190,7 @@ public class PlayerService {
         List<String> existingIds = new ArrayList<>();
         Set<Long> boxscoreIds = new HashSet<>();
         for (PlayerEntity player : players) {
-            if (!existingIds.contains(player.getPersonId())) {
-                PlayerGameHistory hist = new PlayerGameHistory();
-                hist.setBoxscoreMap(new HashMap<>());
-                hist.setPlayer(playerMapper.entityToDto(player));
-                List<PlayerGameStatsEntity> indPlayerStats = playerStats.parallelStream().filter(isPersonId(player.getPersonId()))
-                        .collect(Collectors.toList());
-                for (PlayerGameStatsEntity indPlayerStat : indPlayerStats) {
-                    boxscoreIds.add(indPlayerStat.getBoxscoreId());
-                    hist.getBoxscoreMap().put(indPlayerStat.getBoxscoreId(), playerGameStatsMapper.entityToDto(indPlayerStat));
-                }
-                hists.add(hist);
-                existingIds.add(player.getPersonId());
-            }
+            addHistory(hists, playerStats, existingIds, boxscoreIds, player);
         }
         List<BoxscoreEntity> boxscores = boxscoreDAO.findByIds(boxscoreIds);
         Map<String, List<Long>> boxByYear = new HashMap<>();
@@ -222,6 +215,23 @@ public class PlayerService {
         }
         hists.get(0).setYearAverages(yearAveragesFinal);
         return hists;
+    }
+
+    private void addHistory(List<PlayerGameHistory> hists, List<PlayerGameStatsEntity> playerStats, List<String> existingIds,
+            Set<Long> boxscoreIds, PlayerEntity player) {
+        if (!existingIds.contains(player.getPersonId())) {
+            PlayerGameHistory hist = new PlayerGameHistory();
+            hist.setBoxscoreMap(new HashMap<>());
+            hist.setPlayer(playerMapper.entityToDto(player));
+            List<PlayerGameStatsEntity> indPlayerStats = playerStats.parallelStream().filter(isPersonId(player.getPersonId()))
+                    .collect(Collectors.toList());
+            for (PlayerGameStatsEntity indPlayerStat : indPlayerStats) {
+                boxscoreIds.add(indPlayerStat.getBoxscoreId());
+                hist.getBoxscoreMap().put(indPlayerStat.getBoxscoreId(), playerGameStatsMapper.entityToDto(indPlayerStat));
+            }
+            hists.add(hist);
+            existingIds.add(player.getPersonId());
+        }
     }
 
     private void addYearOfPlayer(Map<String, PlayerGameStats> yearAveragesFinal, Map.Entry<String, List<PlayerGameStats>> entry) {
@@ -289,6 +299,15 @@ public class PlayerService {
 
     private Predicate<? super PlayerGameStatsEntity> isPersonId(String playerId) {
         return z -> z.getPersonId().equalsIgnoreCase(playerId);
+    }
+
+    public List<Player> getAllPlayers() {
+        Iterable<PlayerEntity> playerEnts = playerDAO.findAll();
+        List<Player> players = new ArrayList<>();
+        for (PlayerEntity e : playerEnts) {
+            players.add(playerMapper.entityToDto(e));
+        }
+        return players;
     }
 
 }

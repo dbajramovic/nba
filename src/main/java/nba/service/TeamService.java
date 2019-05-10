@@ -8,22 +8,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import nba.dao.model.GameEntity;
+import nba.dao.model.PlayerEntity;
 import nba.dao.model.ScheduleEntity;
 import nba.dao.model.TeamEntity;
 import nba.dao.repos.GameDAO;
+import nba.dao.repos.PlayerDAO;
 import nba.dao.repos.ScheduleDAO;
 import nba.dao.repos.TeamDAO;
 import nba.mapper.GameMapper;
+import nba.mapper.PlayerMapper;
 import nba.mapper.ScheduleMapper;
 import nba.mapper.TeamMapper;
+import nba.model.Player;
 import nba.model.Schedule;
 import nba.model.Team;
+import nba.model.TeamRoster;
 
 @Component
 public class TeamService {
 
     @Autowired
     TeamDAO teamDAO;
+
+    @Autowired
+    PlayerDAO playerDAO;
 
     @Autowired
     TeamMapper teamMapper;
@@ -39,6 +47,9 @@ public class TeamService {
 
     @Autowired
     GameDAO gameDAO;
+
+    @Autowired
+    PlayerMapper playerMapper;
 
     public List<String> getNicknamesOfTeams(Boolean onlyNbaFranchises) {
         return teamDAO.getNicknames(onlyNbaFranchises);
@@ -100,5 +111,27 @@ public class TeamService {
         List<GameEntity> games = gameDAO.findBySchedule(scheduleEnt.getId());
         sch.setGames(gameMapper.entitesToDtos(games, false));
         return sch;
+    }
+
+    public List<Team> getAllTeams() {
+        Iterable<TeamEntity> teamEnts = teamDAO.findAll();
+        List<Team> teams = new ArrayList<>();
+        for (TeamEntity e : teamEnts) {
+            teams.add(teamMapper.entityToDto(e));
+        }
+        return teams;
+    }
+
+    public TeamRoster getTeamRoster(String team, String year) {
+        TeamRoster tRoster = new TeamRoster();
+        tRoster.setYear(year);
+        TeamEntity teamEnt = teamDAO.findByTeamNickname(team, year);
+        List<PlayerEntity> playerEnts = playerDAO.findByTeamId(teamEnt.getId().toString());
+        tRoster.setName(teamEnt.getFullName());
+        List<Player> players = new ArrayList<>();
+        for (PlayerEntity p : playerEnts) {
+            players.add(playerMapper.entityToDto(p));
+        }
+        return tRoster;
     }
 }

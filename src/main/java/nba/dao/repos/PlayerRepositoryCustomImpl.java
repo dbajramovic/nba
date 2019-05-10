@@ -21,4 +21,11 @@ public class PlayerRepositoryCustomImpl implements PlayerRepositoryCustom {
         return query1.getResultList();
     }
 
+    @Override
+    public List<PlayerEntity> findByTeamId(String team) {
+        String query = "select player from PlayerEntity player where player.playerTeams.team = :team";
+        TypedQuery<PlayerEntity> query1 = entityManager.createQuery(query, PlayerEntity.class).setParameter("team", team);
+        return query1.getResultList();
+    }
+
 }
