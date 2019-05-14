@@ -1,5 +1,7 @@
 package nba.controllers;
 
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
+import nba.model.PlayerGameStatsTimeline;
 import nba.service.BoxscoreService;
 import nba.service.GameService;
 import nba.service.PlayerGameStatsService;
@@ -78,8 +81,24 @@ public class PlayerGameStatsController {
             return boxScoreMap;
         } catch (Exception e) {
             LOGGER.info("{}", e.getMessage());
-            throw e;
         }
+        return null;
+    }
+
+    @GetMapping(value = "player/timeline", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public PlayerGameStatsTimeline getTimeLine(final String name, final String surname, final String start, final String end)
+            throws Exception {
+        LocalDateTime startDate = createDate(start);
+        LocalDateTime endDate = createDate(end);
+        return pgsService.getTimeline(name, surname, startDate, endDate);
+    }
+
+    private LocalDateTime createDate(String date) {
+        Long year = Long.parseLong(date.split("-")[0]);
+        Long month = Long.parseLong(date.split("-")[1]);
+        Long day = Long.parseLong(date.split("-")[2]);
+        return LocalDateTime.of(year.intValue(), Month.of(month.intValue()), day.intValue(), 0, 0);
     }
 
 }

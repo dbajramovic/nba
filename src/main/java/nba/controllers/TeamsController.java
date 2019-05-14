@@ -78,7 +78,7 @@ public class TeamsController {
 
     @GetMapping(value = "team/roster", produces = "application/json; charset=UTF-8")
     @ResponseBody
-    public List<TeamRoster> getTeamRoster(@RequestParam final String team, @RequestParam final String year) {
+    public TeamRoster getTeamRoster(@RequestParam final String team, @RequestParam final String year) {
         return teamService.getTeamRoster(team, year);
     }
 
