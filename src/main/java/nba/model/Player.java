@@ -27,6 +27,8 @@ public class Player implements Serializable {
     private String country;
     private Team team;
     private String year;
+    private String teamName;
+    private Long id;
 
     public String getFirstName() {
         return firstName;
@@ -415,6 +417,36 @@ public class Player implements Serializable {
         builder.append(year);
         builder.append("]");
         return builder.toString();
+    }
+
+    /**
+     * @return the teamName
+     */
+    public String getTeamName() {
+        return teamName;
+    }
+
+    /**
+     * @param teamName
+     *            the teamName to set
+     */
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * @param id
+     *            the id to set
+     */
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

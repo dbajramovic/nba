@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ import nba.dao.repos.PlayerDAO;
 import nba.dao.repos.PlayerGameStatsDAO;
 import nba.dao.repos.PlayerTeamDAO;
 import nba.dao.repos.TeamDAO;
+import nba.helpers.Lookup;
 import nba.helpers.MappingChecker;
 import nba.mapper.PlayerGameStatsMapper;
 import nba.mapper.PlayerMapper;
@@ -38,6 +40,9 @@ import nba.model.Team;
 
 @Component
 public class PlayerService {
+
+    @Autowired
+    Lookup lookup;
 
     @Autowired
     private PlayerDAO playerDAO;
@@ -82,10 +87,15 @@ public class PlayerService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public List<Player> savePlayers(ArrayList<LinkedHashMap<String, Object>> players, String year) {
+    public List<Player> savePlayers(ArrayList<LinkedHashMap<String, Object>> players, String year, List<String> keys) {
         List<Player> playerList = new ArrayList<>();
         List<PlayerEntity> playerEnts = new ArrayList<>();
         List<PlayerTeamEntity> playerTeamEnts = new ArrayList<>();
+        Iterable<TeamEntity> teamEnts = teamDAO.findAll();
+        List<TeamEntity> teamList = new ArrayList<>();
+        for (TeamEntity ent : teamEnts) {
+            teamList.add(ent);
+        }
         for (LinkedHashMap<String, Object> t : players) {
             PlayerEntity ent = mapPlayer(year, t);
             PlayerEntity player = playerDAO.save(ent);
@@ -95,21 +105,44 @@ public class PlayerService {
                 @SuppressWarnings("unchecked")
                 ArrayList<LinkedHashMap<String, Object>> teams = (ArrayList<LinkedHashMap<String, Object>>) t.get("teams");
                 for (LinkedHashMap<String, Object> t1 : teams) {
-                    TeamEntity team = teamDAO.findByTeamId((String) t1.get("teamId"), year);
-                    PlayerTeamEntity playerTeam = new PlayerTeamEntity();
-                    playerTeam.setPlayer(player);
-                    playerTeam.setSeasonStart((String) t1.get("seasonStart"));
-                    playerTeam.setSeasonEnd((String) t1.get("seasonEnd"));
-                    playerTeam.setTeam(team);
-                    playerTeam.setPlayerRefId(player.getPersonId());
-                    playerTeam.setTeamRefId(team.getTeamId());
-                    playerTeamEnts.add(playerTeam);
+                    Optional<TeamEntity> team = teamList.stream().filter(isTeamIdYear((String) t1.get("teamId"), year)).findFirst();
+                    if (team.isPresent()) {
+                        PlayerTeamEntity playerTeam = new PlayerTeamEntity();
+                        playerTeam.setPlayer(player);
+                        playerTeam.setSeasonStart((String) t1.get("seasonStart"));
+                        playerTeam.setSeasonEnd((String) t1.get("seasonEnd"));
+                        playerTeam.setTeam(team.get());
+                        playerTeam.setPlayerRefId(player.getPersonId());
+                        playerTeam.setTeamRefId(team.get().getTeamId());
+                        playerTeamEnts.add(playerTeam);
+                    } else {
+                        System.out.println("Player" + player.getFirstName() + " " + player.getLastName() + " for year" + year
+                                + " has no club with id " + (String) t1.get("teamId"));
+                    }
                 }
             }
         }
         playerDAO.saveAll(playerEnts);
-        playerTeamDAO.saveAll(playerTeamEnts);
+        List<PlayerTeamEntity> cleanEnts = cleanUpPlayerTeamDuplicates(playerTeamEnts, keys);
+        playerTeamDAO.saveAll(cleanEnts);
         return playerList;
+    }
+
+    private Predicate<? super TeamEntity> isTeamIdYear(String string, String year) {
+        return z -> z.getTeamId().equalsIgnoreCase(string) && z.getYear().equalsIgnoreCase(year);
+    }
+
+    private List<PlayerTeamEntity> cleanUpPlayerTeamDuplicates(List<PlayerTeamEntity> playerTeamEnts, List<String> keys) {
+        List<PlayerTeamEntity> cleanEnts = new ArrayList<>();
+        for (PlayerTeamEntity oldEnt : playerTeamEnts) {
+            String key = oldEnt.getTeamRefId() + "#" + oldEnt.getPlayerRefId() + "#" + oldEnt.getSeasonStart() + "#"
+                    + oldEnt.getSeasonEnd();
+            if (!keys.contains(key)) {
+                cleanEnts.add(oldEnt);
+                keys.add(key);
+            }
+        }
+        return cleanEnts;
     }
 
     private PlayerEntity mapPlayer(String year, LinkedHashMap<String, Object> t) {
@@ -307,7 +340,23 @@ public class PlayerService {
         for (PlayerEntity e : playerEnts) {
             players.add(playerMapper.entityToDto(e));
         }
-        return players;
+        List<Player> cleanedPlayers = cleanDuplicates(players);
+        lookup.lookupPlayersTeams(cleanedPlayers);
+        return cleanedPlayers;
+    }
+
+    public List<Player> cleanDuplicates(List<Player> players) {
+        List<Player> cleanedPlayers = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
+        for (Player player : players) {
+            String key = player.getFirstName() + "#" + player.getLastName() + "#" + player.getPersonId();
+            if (!keys.contains(key)) {
+                keys.add(key);
+                cleanedPlayers.add(player);
+            }
+        }
+        return cleanedPlayers;
+
     }
 
 }

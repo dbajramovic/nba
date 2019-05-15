@@ -101,7 +101,7 @@ public class TeamsController {
                     Map<String, Object> playerMap = (HashMap<String, Object>) entry.getValue();
                     for (Object o : playerMap.entrySet()) {
                         HashMap.Entry<String, Object> oMap = (HashMap.Entry<String, Object>) o;
-                        teams = (ArrayList<LinkedHashMap<String, Object>>) oMap.getValue();
+                        teams.addAll((ArrayList<LinkedHashMap<String, Object>>) oMap.getValue());
                     }
                     model.addAttribute("teams", teams);
                 }

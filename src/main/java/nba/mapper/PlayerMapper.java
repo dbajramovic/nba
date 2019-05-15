@@ -16,7 +16,8 @@ public class PlayerMapper {
         player.setFirstName(ent.getFirstName());
         player.setLastAffliation(ent.getLastAffliation());
         player.setCollegeName(ent.getCollegeName());
-        ;
+        player.setPersonId(ent.getPersonId());
+        player.setId(ent.getId());
         player.setLastName(ent.getLastName());
         player.setCountry(ent.getCountry());
         player.setDateOfBirthUTC(ent.getDateOfBirthUTC());

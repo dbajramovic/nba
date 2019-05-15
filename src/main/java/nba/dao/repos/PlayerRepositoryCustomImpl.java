@@ -7,6 +7,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import nba.dao.model.PlayerEntity;
+import nba.dao.model.PlayerTeamEntity;
 
 public class PlayerRepositoryCustomImpl implements PlayerRepositoryCustom {
 
@@ -25,6 +26,13 @@ public class PlayerRepositoryCustomImpl implements PlayerRepositoryCustom {
     public List<PlayerEntity> findByTeamId(String team) {
         String query = "select player from PlayerEntity player where player.playerTeams.team = :team";
         TypedQuery<PlayerEntity> query1 = entityManager.createQuery(query, PlayerEntity.class).setParameter("team", team);
+        return query1.getResultList();
+    }
+
+    @Override
+    public List<PlayerTeamEntity> findByPlayerId(List<String> playerIds) {
+        String query = "select playerTeam from PlayerTeamEntity playerTeam where playerTeam.playerRefId in :playerIds";
+        TypedQuery<PlayerTeamEntity> query1 = entityManager.createQuery(query, PlayerTeamEntity.class).setParameter("playerIds", playerIds);
         return query1.getResultList();
     }
 

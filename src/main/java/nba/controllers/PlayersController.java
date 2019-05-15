@@ -44,8 +44,9 @@ public class PlayersController {
     @ResponseBody
     public List<Player> saveAllPlayers(Model model) {
         List<Player> players = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
         for (int i = Integer.parseInt(Years.STARTYEAR.getValue()); i < Integer.parseInt(Years.ENDYEAR.getValue()); i++) {
-            players.addAll(getRoster(i + "", model));
+            players.addAll(getRoster(i + "", model, keys));
             LOGGER.info("Year {} saved.", i);
         }
         return players;
@@ -54,8 +55,11 @@ public class PlayersController {
     @SuppressWarnings("unchecked")
     @GetMapping(value = "roster", produces = "application/json; charset=UTF-8")
     @ResponseBody
-    public List<Player> getRoster(@RequestParam String year, Model model) {
+    public List<Player> getRoster(@RequestParam String year, Model model, List<String> keys) {
         final String url = "http://data.nba.net/prod/v1/" + year + "/players.json";
+        if (keys == null) {
+            keys = new ArrayList<>();
+        }
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -66,17 +70,18 @@ public class PlayersController {
                     }, params);
             Map<String, Object> map = response.getBody();
             ArrayList<LinkedHashMap<String, Object>> players = new ArrayList<>();
+
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 if (entry.getKey().equalsIgnoreCase("league")) {
                     Map<String, Object> playerMap = (HashMap<String, Object>) entry.getValue();
                     for (Object o : playerMap.entrySet()) {
                         HashMap.Entry<String, Object> oMap = (HashMap.Entry<String, Object>) o;
-                        players = (ArrayList<LinkedHashMap<String, Object>>) oMap.getValue();
+                        players.addAll((ArrayList<LinkedHashMap<String, Object>>) oMap.getValue());
                     }
                     model.addAttribute("players", players);
                 }
             }
-            return playersService.savePlayers(players, year);
+            return playersService.savePlayers(players, year, keys);
         } catch (Exception e) {
             LOGGER.info("{}", e.getMessage());
         }
