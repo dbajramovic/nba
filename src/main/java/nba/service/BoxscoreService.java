@@ -62,13 +62,50 @@ public class BoxscoreService {
     @SuppressWarnings("unchecked")
     public Boxscore saveBoxscore(Map<String, Object> boxScoreMap) {
         Boxscore box = new Boxscore();
-        box.setTimesTied((String) boxScoreMap.get("timesTied"));
-        box.setLeadChanges((String) boxScoreMap.get("leadChanges"));
-        box.setYear((String) boxScoreMap.get("year"));
-        box.setGameId((String) boxScoreMap.get("gameId"));
-        TeamBoxscoreStat hTeam = new TeamBoxscoreStat();
-        TeamBoxscoreStat vTeam = new TeamBoxscoreStat();
-        Map<String, Object> hMap = (HashMap<String, Object>) boxScoreMap.get("hTeam");
+        if (boxScoreMap != null) {
+            if (boxScoreMap.get("timesTied") != null) {
+                box.setTimesTied((String) boxScoreMap.get("timesTied"));
+            }
+            box.setLeadChanges((String) boxScoreMap.get("leadChanges"));
+            box.setYear((String) boxScoreMap.get("year"));
+            box.setGameId((String) boxScoreMap.get("gameId"));
+            TeamBoxscoreStat hTeam = new TeamBoxscoreStat();
+            TeamBoxscoreStat vTeam = new TeamBoxscoreStat();
+            Map<String, Object> hMap = (HashMap<String, Object>) boxScoreMap.get("hTeam");
+            Map<String, Object> vMap = (HashMap<String, Object>) boxScoreMap.get("vTeam");
+            if (hMap != null && vMap != null) {
+                mapTeamBoxscoreStat(boxScoreMap, hTeam, hMap);
+                mapTeamBoxscoreStat(boxScoreMap, vTeam, vMap);
+                box.sethTeam(hTeam);
+                box.setvTeam(vTeam);
+                box.setActivePlayers(new ArrayList<>());
+                ArrayList<LinkedHashMap<String, Object>> players = (ArrayList<LinkedHashMap<String, Object>>) boxScoreMap
+                        .get("activePlayers");
+                for (LinkedHashMap<String, Object> stat : players) {
+                    box.getActivePlayers().add(pgsService.mapPGS(stat));
+                }
+
+                BoxscoreEntity boxEnt = boxDAO.save(boxMapper.dtoToEntity(box));
+                for (PlayerGameStats pgs : box.getActivePlayers()) {
+                    PlayerGameStatsEntity ent = pgsMapper.dtoToEntity(pgs);
+                    ent.setBoxscore(boxEnt);
+                    pgsDAO.save(ent);
+                }
+                TeamBoxscoreStatEntity hTeamEnt = teamBoxMapper.dtoToEntity(hTeam);
+                TeamBoxscoreStatEntity vTeamEnt = teamBoxMapper.dtoToEntity(vTeam);
+                hTeamEnt.setBoxscore(boxEnt);
+                vTeamEnt.setBoxscore(boxEnt);
+                hTeamEnt.setTeamId((String) boxScoreMap.get("hTeamId"));
+                vTeamEnt.setTeamId((String) boxScoreMap.get("vTeamId"));
+                teamBoxscoreStatDAO.save(hTeamEnt);
+                teamBoxscoreStatDAO.save(vTeamEnt);
+            }
+        }
+        return box;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void mapTeamBoxscoreStat(Map<String, Object> boxScoreMap, TeamBoxscoreStat hTeam, Map<String, Object> hMap) {
         if (MappingChecker.canBeParsedIntoLong((String) hMap.get(FASTBREAKPOINTS))) {
             hTeam.setFastBreakPoints(Long.parseLong((String) hMap.get(FASTBREAKPOINTS)));
         }
@@ -85,53 +122,7 @@ public class BoxscoreService {
             hTeam.setLongestRun(Long.parseLong((String) hMap.get(LONGESTRUN)));
         }
         hTeam.setTeamId((String) boxScoreMap.get("hTeamId"));
-        Map<String, Object> totalsHomeMap = (HashMap<String, Object>) hMap.get("totals");
-        hTeam.setTotals(pgsService.mapPGS(totalsHomeMap));
-
-        Map<String, Object> vMap = (HashMap<String, Object>) boxScoreMap.get("vTeam");
-        if (MappingChecker.canBeParsedIntoLong((String) vMap.get(FASTBREAKPOINTS))) {
-            vTeam.setFastBreakPoints(Long.parseLong((String) vMap.get(FASTBREAKPOINTS)));
-        }
-        if (MappingChecker.canBeParsedIntoLong((String) vMap.get(POINTSINTPAINT))) {
-            vTeam.setPointsInPaint(Long.parseLong((String) vMap.get(POINTSINTPAINT)));
-        }
-        if (MappingChecker.canBeParsedIntoLong((String) vMap.get(BIGGESTLEAD))) {
-            vTeam.setBiggestLead(Long.parseLong((String) vMap.get(BIGGESTLEAD)));
-        }
-        if (MappingChecker.canBeParsedIntoLong((String) vMap.get(SECONDCHANCEPOINTS))) {
-            vTeam.setSecondChancePoints(Long.parseLong((String) vMap.get(SECONDCHANCEPOINTS)));
-        }
-        if (MappingChecker.canBeParsedIntoLong((String) vMap.get(LONGESTRUN))) {
-            vTeam.setLongestRun(Long.parseLong((String) vMap.get(LONGESTRUN)));
-        }
-        hTeam.setTeamId((String) boxScoreMap.get("vTeamId"));
-        Map<String, Object> visitorsHomeMap = (HashMap<String, Object>) vMap.get("totals");
-        vTeam.setTotals(pgsService.mapPGS(visitorsHomeMap));
-        box.sethTeam(hTeam);
-        box.setvTeam(vTeam);
-        box.setActivePlayers(new ArrayList<>());
-        ArrayList<LinkedHashMap<String, Object>> players = (ArrayList<LinkedHashMap<String, Object>>) boxScoreMap.get("activePlayers");
-        for (LinkedHashMap<String, Object> stat : players) {
-            box.getActivePlayers().add(pgsService.mapPGS(stat));
-        }
-
-        BoxscoreEntity boxEnt = boxDAO.save(boxMapper.dtoToEntity(box));
-        for (PlayerGameStats pgs : box.getActivePlayers()) {
-            PlayerGameStatsEntity ent = pgsMapper.dtoToEntity(pgs);
-            ent.setBoxscore(boxEnt);
-            pgsDAO.save(ent);
-        }
-        TeamBoxscoreStatEntity hTeamEnt = teamBoxMapper.dtoToEntity(hTeam);
-        TeamBoxscoreStatEntity vTeamEnt = teamBoxMapper.dtoToEntity(vTeam);
-        LOGGER.info("Getting TeamBoxscoreStatEntity {}", hTeam.getTeamId());
-        LOGGER.info("Getting TeamBoxscoreStatEntity {}", hTeam.getTeamId());
-        hTeamEnt.setBoxscore(boxEnt);
-        vTeamEnt.setBoxscore(boxEnt);
-        hTeamEnt.setTeamId((String) boxScoreMap.get("hTeamId"));
-        vTeamEnt.setTeamId((String) boxScoreMap.get("vTeamId"));
-        teamBoxscoreStatDAO.save(hTeamEnt);
-        teamBoxscoreStatDAO.save(vTeamEnt);
-        return box;
+        hTeam.setTotals(pgsService.mapPGS((HashMap<String, Object>) hMap.get("totals")));
     }
 
 }

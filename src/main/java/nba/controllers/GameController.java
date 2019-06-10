@@ -51,15 +51,26 @@ public class GameController {
     @GetMapping(value = "saveAllGames", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public List<Game> saveAllGames(Model model) {
+        LOGGER.info("Started to save games.");
         List<Game> games = new ArrayList<>();
         Map<String, String> gamesToGet = gameService.getNewGames();
         int numOfGames = gamesToGet.entrySet().parallelStream().filter(yearIsOK()).collect(Collectors.toList()).size();
+        LOGGER.info("{} games", numOfGames);
+        List<String> gameIds = new ArrayList<>();
         for (Map.Entry<String, String> entry : gamesToGet.entrySet()) {
             if (entry.getValue().startsWith("2016") || entry.getValue().startsWith("2017") || entry.getValue().startsWith("2018")
                     || entry.getValue().startsWith("2019")) {
-                LOGGER.info("Saving game:{}/{}({} on date:{})[{}%]", games.size(), numOfGames, entry.getKey(), entry.getValue(),
-                        (games.size() / (float) numOfGames) * 100);
-                games.add(getGame(entry.getValue(), entry.getKey(), model));
+                if (!gameIds.contains(entry.getKey())) {
+                    LOGGER.info("Saving game:{}/{}({} on date:{})[{}%]", games.size(), numOfGames, entry.getKey(), entry.getValue(),
+                            (games.size() / (float) numOfGames) * 100);
+                    Game game = getGame(entry.getValue(), entry.getKey(), model);
+                    if (game != null) {
+                        games.add(game);
+                        gameIds.add(game.getGameId());
+                    }
+                } else {
+                    LOGGER.info("Game ID:{} already is in database.", entry.getKey());
+                }
             }
         }
         return games;

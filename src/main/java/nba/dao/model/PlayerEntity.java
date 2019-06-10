@@ -76,8 +76,15 @@ public class PlayerEntity {
     @OneToMany(mappedBy = "player")
     private List<PlayerTeamEntity> playerTeams;
 
+    @OneToMany(mappedBy = "player")
+    private List<PlayerSalaryEntity> playerSalaries;
+
     public Long getId() {
         return id;
+    }
+
+    public PlayerEntity getItself() {
+        return this;
     }
 
     public void setId(Long id) {
@@ -222,6 +229,10 @@ public class PlayerEntity {
 
     public String getCountry() {
         return country;
+    }
+
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
 
     public void setCountry(String country) {

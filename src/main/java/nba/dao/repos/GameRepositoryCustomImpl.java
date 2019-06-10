@@ -3,6 +3,7 @@ package nba.dao.repos;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -54,6 +55,13 @@ public class GameRepositoryCustomImpl implements GameRepositoryCustom {
     public List<GameEntity> findBySchedule(Long id) {
         String query = "select game from GameEntity game where game.schedule.id = :id order by date + 0 asc";
         TypedQuery<GameEntity> query1 = entityManager.createQuery(query, GameEntity.class).setParameter("id", id);
+        return query1.getResultList();
+    }
+
+    @Override
+    public List<GameEntity> findByGameIds(Set<String> gameIds) {
+        String query = "select game from GameEntity game where game.gameId in :gameIds";
+        TypedQuery<GameEntity> query1 = entityManager.createQuery(query, GameEntity.class).setParameter("gameIds", gameIds);
         return query1.getResultList();
     }
 
