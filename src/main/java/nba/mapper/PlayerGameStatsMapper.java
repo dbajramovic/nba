@@ -60,6 +60,9 @@ public class PlayerGameStatsMapper {
         pgs.setTpm(ent.getTpm());
         pgs.setTpp(ent.getTpp());
         pgs.setTurnovers(ent.getTurnovers());
+        if (ent.getBoxscore() != null) {
+            pgs.setBoxscoreId(ent.getBoxscore().getId());
+        }
         return pgs;
     }
 

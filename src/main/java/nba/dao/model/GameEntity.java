@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
@@ -42,18 +40,6 @@ public class GameEntity {
 
     public void setTntOt(String tntOt) {
         this.tntOt = tntOt;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "schedule")
-    private ScheduleEntity schedule;
-
-    public ScheduleEntity getSchedule() {
-        return schedule;
-    }
-
-    public void setSchedule(ScheduleEntity schedule) {
-        this.schedule = schedule;
     }
 
     @OneToMany(mappedBy = "game")

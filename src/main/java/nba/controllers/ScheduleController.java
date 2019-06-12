@@ -27,8 +27,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nba.dao.model.GameEntity;
 import nba.dao.model.ScheduleEntity;
+import nba.dao.model.ScheduleGameEntity;
 import nba.dao.repos.GameDAO;
 import nba.dao.repos.ScheduleDAO;
+import nba.dao.repos.ScheduleGameDAO;
 import nba.model.Schedule;
 import nba.model.Years;
 import nba.service.GameService;
@@ -60,6 +62,8 @@ public class ScheduleController {
 
     @Autowired
     GameDAO gameDAO;
+    @Autowired
+    ScheduleGameDAO schGameDAO;
 
     @GetMapping(value = "saveAllSchedules", produces = "application/json; charset=UTF-8")
     @ResponseBody
@@ -97,16 +101,43 @@ public class ScheduleController {
             Map<String, Object> playerMap = (HashMap<String, Object>) map.get("sports_content");
             ArrayList<LinkedHashMap<String, Object>> oMap = (ArrayList<LinkedHashMap<String, Object>>) playerMap.get("game");
             List<GameEntity> games = new ArrayList<>();
-            List<ScheduleEntity> schedules = new ArrayList<>();
+            List<ScheduleGameEntity> maps = new ArrayList<>();
             ScheduleEntity schEntity = scheduleDAO.findByTeamAndYear(team, year);
+            Map<String, Long> gameIdIdMap = gameDAO.findGameIds();
             for (LinkedHashMap<String, Object> t : oMap) {
-                games.add(gameService.createGameEntity(t, team, year, schedules, schEntity));
+                String gameId = "";
+                GameEntity newGame = null;
+                if (t.get("id") != null) {
+                    gameId = (String) t.get("id");
+                    LOGGER.info("Game ID is :{}", gameId);
+                }
+                if ("".equalsIgnoreCase(gameId) || gameIdIdMap.get(gameId) == null) {
+                    LOGGER.info("Game is new and will be added!");
+                    newGame = gameDAO.save(gameService.createGameEntity(t, team, year));
+                    gameIdIdMap.put(newGame.getGameId(), newGame.getId());
+                    games.add(newGame);
+                } else {
+                    newGame = gameDAO.findByGameId(gameId);
+                    LOGGER.info("Game already exists in  the system, making link for {}-> {}", newGame.getGameId(), schEntity.getTeam());
+                }
+                maps.add(createGameScheduleEntity(newGame, schEntity));
             }
             gameDAO.saveAll(games);
-            LOGGER.info("Saved {} games and {} schedules for ({},{})", games.size(), schedules.size(), team, year);
+            schGameDAO.saveAll(maps);
+            LOGGER.info("Saved {} games and {} schedules for ({},{})", games.size(), maps.size(), team, year);
         } catch (Exception e) {
             LOGGER.error("SHIT:{} YEAR:{} TEAM:{}", e.getMessage(), year, team);
         }
+    }
+
+    private ScheduleGameEntity createGameScheduleEntity(GameEntity newGame, ScheduleEntity schEntity) {
+        ScheduleGameEntity schGame = new ScheduleGameEntity();
+        schGame.setGame(newGame);
+        schGame.setSchedule(schEntity);
+        schGame.setDate(newGame.getDate());
+        schGame.setHomeAbrv(newGame.getGameUrl().split("/")[1].substring(3, 6));
+        schGame.setVisitAbrv(newGame.getGameUrl().split("/")[1].substring(0, 3));
+        return schGame;
     }
 
     public void createAllSchedules(Model model) {

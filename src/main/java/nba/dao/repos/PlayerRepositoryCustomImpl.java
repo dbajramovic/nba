@@ -1,6 +1,7 @@
 package nba.dao.repos;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -33,6 +34,13 @@ public class PlayerRepositoryCustomImpl implements PlayerRepositoryCustom {
     public List<PlayerTeamEntity> findByPlayerId(List<String> playerIds) {
         String query = "select playerTeam from PlayerTeamEntity playerTeam where playerTeam.playerRefId in :playerIds";
         TypedQuery<PlayerTeamEntity> query1 = entityManager.createQuery(query, PlayerTeamEntity.class).setParameter("playerIds", playerIds);
+        return query1.getResultList();
+    }
+
+    @Override
+    public List<PlayerEntity> findByPersonIds(Set<String> personIds) {
+        String query = "select player from PlayerEntity player where player.personId in :personIds";
+        TypedQuery<PlayerEntity> query1 = entityManager.createQuery(query, PlayerEntity.class).setParameter("personIds", personIds);
         return query1.getResultList();
     }
 

@@ -1,7 +1,5 @@
 package nba.dao.model;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -21,12 +19,24 @@ public class ScheduleGameEntity {
     private String homeAbrv;
     private String visitAbrv;
     private String gameId;
-    private LocalDateTime date;
+    private String date;
     private Boolean isLeaguePass;
 
     @ManyToOne
     @JoinColumn(name = "SCHEDULE")
     private ScheduleEntity schedule;
+
+    @ManyToOne
+    @JoinColumn(name = "GAME")
+    private GameEntity game;
+
+    public GameEntity getGame() {
+        return game;
+    }
+
+    public void setGame(GameEntity game) {
+        this.game = game;
+    }
 
     public ScheduleEntity getSchedule() {
         return schedule;
@@ -68,11 +78,11 @@ public class ScheduleGameEntity {
         this.gameId = gameId;
     }
 
-    public LocalDateTime getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

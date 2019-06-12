@@ -21,7 +21,7 @@ public class ScheduleEntity {
     private String year;
 
     @OneToMany(mappedBy = "schedule")
-    private List<GameEntity> games;
+    private List<ScheduleGameEntity> scheduleGames;
 
     public Long getId() {
         return id;
@@ -47,12 +47,12 @@ public class ScheduleEntity {
         this.year = year;
     }
 
-    public List<GameEntity> getGames() {
-        return games;
+    public List<ScheduleGameEntity> getScheduleGames() {
+        return scheduleGames;
     }
 
-    public void setGames(List<GameEntity> games) {
-        this.games = games;
+    public void setScheduleGames(List<ScheduleGameEntity> games) {
+        this.scheduleGames = games;
     }
 
 }

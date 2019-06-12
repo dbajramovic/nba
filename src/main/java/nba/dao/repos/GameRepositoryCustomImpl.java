@@ -3,12 +3,15 @@ package nba.dao.repos;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import nba.dao.model.GameEntity;
+import nba.model.GameLight;
 
 public class GameRepositoryCustomImpl implements GameRepositoryCustom {
 
@@ -55,6 +58,28 @@ public class GameRepositoryCustomImpl implements GameRepositoryCustom {
         String query = "select game from GameEntity game where game.schedule.id = :id order by date + 0 asc";
         TypedQuery<GameEntity> query1 = entityManager.createQuery(query, GameEntity.class).setParameter("id", id);
         return query1.getResultList();
+    }
+
+    @Override
+    public List<GameEntity> findByGameIds(Set<String> gameIds) {
+        String query = "select game from GameEntity game where game.gameId in :gameIds";
+        TypedQuery<GameEntity> query1 = entityManager.createQuery(query, GameEntity.class).setParameter("gameIds", gameIds);
+        return query1.getResultList();
+    }
+
+    @Override
+    public Map<String, Long> findGameIds() {
+        String query = "select game from GameEntity game";
+        return entityManager.createQuery(query, GameEntity.class).getResultList().parallelStream()
+                .collect(Collectors.toMap(GameEntity::getGameId, GameEntity::getId, (g1, g2) -> {
+                    return g1;
+                }));
+    }
+
+    @Override
+    public List<GameLight> getAll(String year) {
+        String query = "select new nba.model.GameLight(game.gameId, game.gameUrl, game.city, game.arena, game.date) from GameEntity game, BoxscoreEntity box where box.gameId = game.gameId and box.year = :year";
+        return entityManager.createQuery(query, GameLight.class).setParameter("year", year).getResultList();
     }
 
 }
