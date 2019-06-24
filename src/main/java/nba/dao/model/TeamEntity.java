@@ -41,6 +41,8 @@ public class TeamEntity {
     @Column(name = "YEAR")
     private String year;
 
+    private String logoUrl;
+
     @OneToMany(mappedBy = "team")
     private List<PlayerTeamEntity> playerTeams;
 
@@ -154,5 +156,19 @@ public class TeamEntity {
 
     public void setYear(String year) {
         this.year = year;
+    }
+
+    /**
+     * @return the logoUrl
+     */
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    /**
+     * @param logoUrl the logoUrl to set
+     */
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
     }
 }

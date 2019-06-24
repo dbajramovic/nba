@@ -21,4 +21,11 @@ public class BoxscoreRepositoryCustomImpl implements BoxscoreRepositoryCustom {
         return query1.getResultList();
     }
 
+    @Override
+    public List<String> findTeamIdsForGameId(String gameId) {
+        String query = "select t.teamId from TeamBoxscoreStatEntity t, BoxscoreEntity box where box.gameId in :gameId and t.boxscore.id = box.id";
+        TypedQuery<String> query1 = entityManager.createQuery(query, String.class).setParameter("gameId", gameId);
+        return query1.getResultList();
+    }
+
 }

@@ -31,6 +31,8 @@ public class PlayerGameStats implements Serializable {
     private Long blocks;
     private String plusMinus;
     private String dnp;
+    private Long boxscoreId;
+    private String matchDescription;
 
     public String getPersonId() {
         return personId;
@@ -287,6 +289,35 @@ public class PlayerGameStats implements Serializable {
         builder.append(dnp);
         builder.append("]");
         return builder.toString();
+    }
+
+    /**
+     * @return the matchDescription
+     */
+    public String getMatchDescription() {
+        return matchDescription;
+    }
+
+    /**
+     * @param matchDescription
+     *            the matchDescription to set
+     */
+    public void setMatchDescription(String matchDescription) {
+        this.matchDescription = matchDescription;
+    }
+
+    /**
+     * @return the boxscoreId
+     */
+    public Long getBoxscoreId() {
+        return boxscoreId;
+    }
+
+    /**
+     * @param boxscoreId the boxscoreId to set
+     */
+    public void setBoxscoreId(Long boxscoreId) {
+        this.boxscoreId = boxscoreId;
     }
 
 }

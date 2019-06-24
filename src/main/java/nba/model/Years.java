@@ -2,7 +2,7 @@ package nba.model;
 
 public enum Years {
     /** STARTYEAR */
-    STARTYEAR("2012"),
+    STARTYEAR("2011"),
     /** ENDYEAR */
     ENDYEAR("2020");
 

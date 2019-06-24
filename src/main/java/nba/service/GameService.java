@@ -13,13 +13,13 @@ import com.google.common.collect.Lists;
 import nba.dao.model.GameEntity;
 import nba.dao.model.PlayEntity;
 import nba.dao.model.PlayInfo;
-import nba.dao.model.ScheduleEntity;
 import nba.dao.repos.GameDAO;
 import nba.dao.repos.PlayDAO;
 import nba.dao.repos.ScheduleDAO;
 import nba.helpers.PlayDescriptionParser;
 import nba.mapper.GameMapper;
 import nba.model.Game;
+import nba.model.GameLight;
 
 @Component
 public class GameService {
@@ -65,8 +65,7 @@ public class GameService {
         return gameMapper.entitesToDtos(Lists.newArrayList(gameDAO.findAll()), false);
     }
 
-    public GameEntity createGameEntity(Map<String, Object> t, String team, String year, List<ScheduleEntity> schedules,
-            ScheduleEntity schEntity) {
+    public GameEntity createGameEntity(Map<String, Object> t, String team, String year) {
         GameEntity ent = new GameEntity();
         if (t.get("game_url") != null) {
             ent.setGameUrl((String) t.get("game_url"));
@@ -110,8 +109,11 @@ public class GameService {
         if (t.get("tnt_ot") != null) {
             ent.setTntOt((String) t.get("tnt_ot"));
         }
-        ent.setSchedule(schEntity);
         return ent;
+    }
+
+    public List<GameLight> getGamesLight(String year) {
+        return gameDAO.getAll(year);
     }
 
 }

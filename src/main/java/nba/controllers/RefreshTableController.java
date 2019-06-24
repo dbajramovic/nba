@@ -1,5 +1,7 @@
 package nba.controllers;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +30,12 @@ public class RefreshTableController {
     @Autowired
     BoxscoreController bCont;
 
+    @Autowired
+    SalaryController saCont;
+
     @PostMapping(value = "refreshAll", produces = "application/json; charset=UTF-8")
     @ResponseBody
-    public String refreshAll(Model model) {
+    public String refreshAll(Model model) throws IOException {
         LOGGER.info("Saving teams...");
         tCont.saveAllTeams(model);
         LOGGER.info("Saving players...");
@@ -42,6 +47,8 @@ public class RefreshTableController {
         gCont.saveAllGames(model);
         LOGGER.info("Saving boxscores...");
         bCont.saveAllBoxscores(model);
+        LOGGER.info("Saving salaries...");
+        saCont.saveAllSalaries(model);
         return "Saved all stuff";
     }
 

@@ -16,6 +16,7 @@ public class Team implements Serializable {
     private String teamId;
     private String confName;
     private String divName;
+    private String logoUrl;
 
     private String year;
 
@@ -144,6 +145,20 @@ public class Team implements Serializable {
         builder.append(year);
         builder.append("]");
         return builder.toString();
+    }
+
+    /**
+     * @return the logoUrl
+     */
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    /**
+     * @param logoUrl the logoUrl to set
+     */
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
     }
 
 }
