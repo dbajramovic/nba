@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -27,6 +25,8 @@ import org.springframework.web.client.RestTemplate;
 
 import nba.dao.model.PlayInfo;
 import nba.model.Game;
+import nba.model.GameLight;
+import nba.model.GameScore;
 import nba.service.GameService;
 import nba.service.PlayService;
 import nba.service.PlayerService;
@@ -51,29 +51,49 @@ public class GameController {
     @GetMapping(value = "saveAllGames", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public List<Game> saveAllGames(Model model) {
-        List<Game> games = new ArrayList<>();
-        Map<String, String> gamesToGet = gameService.getNewGames();
-        int numOfGames = gamesToGet.entrySet().parallelStream().filter(yearIsOK()).collect(Collectors.toList()).size();
-        for (Map.Entry<String, String> entry : gamesToGet.entrySet()) {
-            if (entry.getValue().startsWith("2016") || entry.getValue().startsWith("2017") || entry.getValue().startsWith("2018")
-                    || entry.getValue().startsWith("2019")) {
-                LOGGER.info("Saving game:{}/{}({} on date:{})[{}%]", games.size(), numOfGames, entry.getKey(), entry.getValue(),
-                        (games.size() / (float) numOfGames) * 100);
-                games.add(getGame(entry.getValue(), entry.getKey(), model));
+        List<Game> games = gameService.getGames();
+        try {
+            LOGGER.info("Started to save games.");
+            int numOfGames = games.stream().map(Game::getGameId).collect(Collectors.toSet()).size();
+            LOGGER.info("{} games", numOfGames);
+            List<String> gameIds = new ArrayList<>();
+            int i = 1;
+            for (Game game1 : games) {
+                if (!gameIds.contains(game1.getGameId())) {
+                    LOGGER.info("Saving game:{}/{}({} on date:{})[{}%]", i, numOfGames, game1.getDate(), game1.getGameId(),
+                            (i / (float) games.size()) * 100);
+                    Game game = getGame(game1.getDate(), game1.getGameId(), model);
+                    if (game != null) {
+                        // games.add(game);
+                        gameIds.add(game.getGameId());
+                    }
+                } else {
+                    LOGGER.info("Game ID:{} already is in database.", game1.getGameId());
+                }
+                i++;
             }
+        } catch (Exception e) {
+            LOGGER.info("SHIT: {}", e.getMessage());
         }
         return games;
-    }
-
-    private Predicate<? super Entry<String, String>> yearIsOK() {
-        return p -> p.getValue().startsWith("2016") || p.getValue().startsWith("2017") || p.getValue().startsWith("2018")
-                || p.getValue().startsWith("2019");
     }
 
     @GetMapping(value = "fullgame", produces = "application/json; charset=UTF-8")
     @ResponseBody
     public Game getFullGame(@RequestParam Long gameId, Model model) {
         return gameService.getFullGame(gameId);
+    }
+
+    @GetMapping(value = "gamescore", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public GameScore getGameScore(@RequestParam Long gameId, Model model) {
+        return gameService.getGameScore(gameId);
+    }
+
+    @GetMapping(value = "games/light", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<GameLight> getGamesLight(@RequestParam String year) {
+        return gameService.getGamesLight(year);
     }
 
     @GetMapping(value = "digestGame", produces = "application/json; charset=UTF-8")
@@ -90,6 +110,7 @@ public class GameController {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
+            LOGGER.info("URL:{}", url);
             HttpEntity<String> entity = new HttpEntity<>("", headers);
             Map<String, String> params = new HashMap<>();
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(url, HttpMethod.GET, entity,
@@ -106,7 +127,7 @@ public class GameController {
             }
             return playService.savePlays(plays, gameId, date);
         } catch (Exception e) {
-            LOGGER.error("Failed", e);
+            LOGGER.error("Failed: {}", e.getMessage());
         }
         return null;
     }

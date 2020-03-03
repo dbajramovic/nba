@@ -1,53 +1,22 @@
 package nba.dao.model;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import nba.helpers.PlayType;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlayInfo {
 
-    private String player;
-    private String description;
-    private String outcome;
-    private String connectedAction;
-    private PlayType playType;
-
-    public String getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(String player) {
-        this.player = player;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getOutcome() {
-        return outcome;
-    }
-
-    public void setOutcome(String outcome) {
-        this.outcome = outcome;
-    }
-
-    public PlayType getPlayType() {
-        return playType;
-    }
-
-    public void setPlayType(PlayType playType) {
-        this.playType = playType;
-    }
-
-    public String getConnectedAction() {
-        return connectedAction;
-    }
-
-    public void setConnectedAction(String connectedAction) {
-        this.connectedAction = connectedAction;
-    }
+    String player;
+    String description;
+    String outcome;
+    String connectedAction;
+    PlayType playType;
 
 }

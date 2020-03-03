@@ -30,6 +30,12 @@ public class Player implements Serializable {
     private String teamName;
     private Long id;
 
+    private String salary;
+
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -447,6 +453,21 @@ public class Player implements Serializable {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     * @return the salary
+     */
+    public String getSalary() {
+        return salary;
+    }
+
+    /**
+     * @param salary
+     *            the salary to set
+     */
+    public void setSalary(String salary) {
+        this.salary = salary;
     }
 
 }

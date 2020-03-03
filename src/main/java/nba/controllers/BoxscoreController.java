@@ -43,20 +43,21 @@ public class BoxscoreController {
         List<Boxscore> boxs = new ArrayList<>();
         List<Game> games = gameService.getGames();
         List<Game> releventGames = new ArrayList<>();
+        releventGames.addAll(games.parallelStream().filter(isInYear("2014")).collect(Collectors.toList()));
         releventGames.addAll(games.parallelStream().filter(isInYear("2015")).collect(Collectors.toList()));
         releventGames.addAll(games.parallelStream().filter(isInYear("2016")).collect(Collectors.toList()));
         releventGames.addAll(games.parallelStream().filter(isInYear("2017")).collect(Collectors.toList()));
         releventGames.addAll(games.parallelStream().filter(isInYear("2018")).collect(Collectors.toList()));
+        releventGames.addAll(games.parallelStream().filter(isInYear("2019")).collect(Collectors.toList()));
         int i = 1;
         Map<String, Game> uniqueGameIds = new HashMap<>();
         for (Game game : releventGames) {
             uniqueGameIds.put(game.getGameId(), game);
         }
         LOGGER.info("Parsing of {} games", uniqueGameIds.entrySet().size());
-        for (Map.Entry<String, Game> game : uniqueGameIds.entrySet()) {
+        for (Game game : releventGames) {
             LOGGER.info("Parsing of boxscores at: {}%", ((float) i / uniqueGameIds.entrySet().size()) * 100);
-            boxs.add(boxscoreService
-                    .saveBoxscore(playerGameStatsController.getBoxscore(game.getValue().getDate(), game.getValue().getGameId(), model)));
+            boxs.add(boxscoreService.saveBoxscore(playerGameStatsController.getBoxscore(game.getDate(), game.getGameId(), model)));
             i++;
         }
         return boxs;

@@ -19,8 +19,8 @@ public class BoxscoreMapper {
         Boxscore box = new Boxscore();
         box.setTimesTied(boxEnt.getLeadChanges());
         box.setLeadChanges(boxEnt.getLeadChanges());
-        box.sethTeam(teamBoxscoreStatMapper.entitytoDto(boxEnt.gethTeam()));
-        box.setvTeam(teamBoxscoreStatMapper.entitytoDto(boxEnt.getvTeam()));
+        box.sethTeam(teamBoxscoreStatMapper.entitytoDto(boxEnt.getHTeam()));
+        box.setvTeam(teamBoxscoreStatMapper.entitytoDto(boxEnt.getVTeam()));
         box.setYear(boxEnt.getYear());
         box.setGameId(boxEnt.getGameId());
         return box;

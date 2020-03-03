@@ -25,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 
 import nba.model.Player;
 import nba.model.PlayerGameHistory;
+import nba.model.PlayerLight;
 import nba.model.Team;
 import nba.model.Years;
 import nba.service.PlayerService;
@@ -98,6 +99,12 @@ public class PlayersController {
     @ResponseBody
     public List<Player> getAllPlayers() {
         return playersService.getAllPlayers();
+    }
+
+    @GetMapping(value = "player/light", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public List<PlayerLight> getAllPlayersLight() {
+        return playersService.getAllPlayersLight();
     }
 
     @GetMapping(value = "player/history", produces = "application/json; charset=UTF-8")

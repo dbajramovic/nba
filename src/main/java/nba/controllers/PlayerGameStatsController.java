@@ -3,6 +3,7 @@ package nba.controllers;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 
 import nba.model.PlayerGameStatsTimeline;
+import nba.model.PlayerGameStatsTimelineSpecific;
 import nba.service.BoxscoreService;
 import nba.service.GameService;
 import nba.service.PlayerGameStatsService;
@@ -77,7 +79,6 @@ public class PlayerGameStatsController {
             boxScoreMap.put("vTeamId", vTeam.get("teamId"));
             boxScoreMap.put("year", year);
             boxScoreMap.put("gameId", gameId);
-            boxscoreService.saveBoxscore(boxScoreMap);
             return boxScoreMap;
         } catch (Exception e) {
             LOGGER.info("{}", e.getMessage());
@@ -92,6 +93,16 @@ public class PlayerGameStatsController {
         LocalDateTime startDate = createDate(start);
         LocalDateTime endDate = createDate(end);
         return pgsService.getTimeline(name, surname, startDate, endDate);
+    }
+
+    @GetMapping(value = "player/timeline/specific", produces = "application/json; charset=UTF-8")
+    @ResponseBody
+    public PlayerGameStatsTimelineSpecific getTimeLineSpecific(@RequestParam final String name, @RequestParam final String surname,
+            @RequestParam final String start, @RequestParam final String end, @RequestParam final List<String> selectedStats)
+            throws Exception {
+        LocalDateTime startDate = createDate(start);
+        LocalDateTime endDate = createDate(end);
+        return pgsService.getTimeLineSpecific(name, surname, startDate, endDate, selectedStats);
     }
 
     private LocalDateTime createDate(String date) {

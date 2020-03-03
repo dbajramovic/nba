@@ -1,6 +1,7 @@
 package nba.dao.repos;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,9 +24,10 @@ public class PlayerRepositoryCustomImpl implements PlayerRepositoryCustom {
     }
 
     @Override
-    public List<PlayerEntity> findByTeamId(String team) {
-        String query = "select player from PlayerEntity player where player.playerTeams.team = :team";
-        TypedQuery<PlayerEntity> query1 = entityManager.createQuery(query, PlayerEntity.class).setParameter("team", team);
+    public List<PlayerEntity> findByTeamId(String team, String year) {
+        String query = "select player from PlayerEntity player where player.personId in (select plt.playerRefId from PlayerTeamEntity plt where plt.teamRefId = :team and plt.seasonEnd = :year)";
+        TypedQuery<PlayerEntity> query1 = entityManager.createQuery(query, PlayerEntity.class).setParameter("team", team)
+                .setParameter("year", year);
         return query1.getResultList();
     }
 
@@ -33,6 +35,13 @@ public class PlayerRepositoryCustomImpl implements PlayerRepositoryCustom {
     public List<PlayerTeamEntity> findByPlayerId(List<String> playerIds) {
         String query = "select playerTeam from PlayerTeamEntity playerTeam where playerTeam.playerRefId in :playerIds";
         TypedQuery<PlayerTeamEntity> query1 = entityManager.createQuery(query, PlayerTeamEntity.class).setParameter("playerIds", playerIds);
+        return query1.getResultList();
+    }
+
+    @Override
+    public List<PlayerEntity> findByPersonIds(Set<String> personIds) {
+        String query = "select player from PlayerEntity player where player.personId in :personIds";
+        TypedQuery<PlayerEntity> query1 = entityManager.createQuery(query, PlayerEntity.class).setParameter("personIds", personIds);
         return query1.getResultList();
     }
 

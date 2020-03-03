@@ -56,6 +56,9 @@ public class PlayDescriptionParser {
                 isPartOfDescription = true;
             }
         }
+        if (playInfo.getPlayType() == null) {
+            return null;
+        }
         return playInfo;
     }
 

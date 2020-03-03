@@ -9,4 +9,6 @@ public interface BoxscoreRepositoryCustom {
 
     public List<BoxscoreEntity> findByIds(Set<Long> boxscoreIds);
 
+    List<String> findTeamIdsForGameId(String gameId);
+
 }

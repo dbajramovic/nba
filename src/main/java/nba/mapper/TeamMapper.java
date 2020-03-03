@@ -25,6 +25,7 @@ public class TeamMapper {
         team.setTricode(ent.getTricode());
         team.setUrlName(ent.getUrlName());
         team.setYear(ent.getYear());
+        team.setLogoUrl(ent.getLogoUrl());
         return team;
     }
 

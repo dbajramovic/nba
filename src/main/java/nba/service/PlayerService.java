@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import lombok.AllArgsConstructor;
 import nba.dao.model.BoxscoreEntity;
 import nba.dao.model.PlayerEntity;
 import nba.dao.model.PlayerGameStatsEntity;
@@ -36,36 +36,29 @@ import nba.mapper.TeamMapper;
 import nba.model.Player;
 import nba.model.PlayerGameHistory;
 import nba.model.PlayerGameStats;
+import nba.model.PlayerLight;
 import nba.model.Team;
 
 @Component
+@AllArgsConstructor
 public class PlayerService {
 
-    @Autowired
     Lookup lookup;
 
-    @Autowired
     private PlayerDAO playerDAO;
 
-    @Autowired
     private TeamDAO teamDAO;
 
-    @Autowired
     private PlayerTeamDAO playerTeamDAO;
 
-    @Autowired
     private PlayerGameStatsDAO playerGameStatsCustom;
 
-    @Autowired
     private BoxscoreDAO boxscoreDAO;
 
-    @Autowired
     private TeamMapper teamMapper;
 
-    @Autowired
     private PlayerMapper playerMapper;
 
-    @Autowired
     private PlayerGameStatsMapper playerGameStatsMapper;
 
     public List<Team> teamsOfPlayer(String name, String surname) {
@@ -357,6 +350,31 @@ public class PlayerService {
         }
         return cleanedPlayers;
 
+    }
+
+    public List<PlayerLight> cleanDuplicatesLight(List<PlayerLight> players) {
+        List<PlayerLight> cleanedPlayers = new ArrayList<>();
+        List<String> keys = new ArrayList<>();
+        for (PlayerLight player : players) {
+            String key = player.getFirstName() + "#" + player.getLastName() + "#" + player.getPersonId();
+            if (!keys.contains(key)) {
+                keys.add(key);
+                cleanedPlayers.add(player);
+            }
+        }
+        return cleanedPlayers;
+
+    }
+
+    public List<PlayerLight> getAllPlayersLight() {
+        Iterable<PlayerEntity> playerEnts = playerDAO.findAll();
+        List<PlayerLight> players = new ArrayList<>();
+        for (PlayerEntity e : playerEnts) {
+
+            players.add(new PlayerLight(e.getFirstName(), e.getLastName(), e.getFullName(), e.getPersonId(), e.getId()));
+        }
+        List<PlayerLight> cleanedPlayers = cleanDuplicatesLight(players);
+        return cleanedPlayers;
     }
 
 }

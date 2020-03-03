@@ -49,7 +49,7 @@ public class PlayerGameStatsMapper {
         pgs.setMin(ent.getMin());
         pgs.setOffReb(ent.getOffReb());
         pgs.setPersonId(ent.getPersonId());
-        pgs.setpFouls(ent.getpFouls());
+        pgs.setpFouls(ent.getPFouls());
         pgs.setPlusMinus(ent.getPlusMinus());
         pgs.setPoints(ent.getPoints());
         pgs.setPos(ent.getPos());
@@ -60,6 +60,9 @@ public class PlayerGameStatsMapper {
         pgs.setTpm(ent.getTpm());
         pgs.setTpp(ent.getTpp());
         pgs.setTurnovers(ent.getTurnovers());
+        if (ent.getBoxscore() != null) {
+            pgs.setBoxscoreId(ent.getBoxscore().getId());
+        }
         return pgs;
     }
 
@@ -79,7 +82,7 @@ public class PlayerGameStatsMapper {
         pgs.setMin(ent.getMin());
         pgs.setOffReb(ent.getOffReb());
         pgs.setPersonId(ent.getPersonId());
-        pgs.setpFouls(ent.getpFouls());
+        pgs.setPFouls(ent.getpFouls());
         pgs.setPlusMinus(ent.getPlusMinus());
         pgs.setPoints(ent.getPoints());
         pgs.setPos(ent.getPos());

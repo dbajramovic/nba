@@ -1,19 +1,29 @@
 package nba.service;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import nba.dao.model.BoxscoreEntity;
+import nba.dao.model.GameEntity;
 import nba.dao.model.PlayerEntity;
 import nba.dao.model.PlayerGameStatsEntity;
+import nba.dao.repos.BoxscoreDAO;
+import nba.dao.repos.GameDAO;
 import nba.dao.repos.PlayerDAO;
 import nba.dao.repos.PlayerGameStatsDAO;
 import nba.helpers.MappingChecker;
@@ -21,6 +31,7 @@ import nba.mapper.PlayerGameStatsMapper;
 import nba.model.PlayerGameStats;
 import nba.model.PlayerGameStatsAdjusted;
 import nba.model.PlayerGameStatsTimeline;
+import nba.model.PlayerGameStatsTimelineSpecific;
 
 @Component
 public class PlayerGameStatsService {
@@ -30,6 +41,12 @@ public class PlayerGameStatsService {
 
     @Autowired
     PlayerDAO playerDAO;
+
+    @Autowired
+    BoxscoreDAO boxscoreDAO;
+
+    @Autowired
+    GameDAO gameDAO;
 
     @Autowired
     PlayerGameStatsMapper playerGameStatsMapper;
@@ -121,6 +138,7 @@ public class PlayerGameStatsService {
             throw new Exception(String.format("Player %s %s does not exist. Please check name and surname!", name, surname));
         }
         List<PlayerGameStatsEntity> pgsForTimeAndPlayer = pgsDAO.getPGSForTimeAndPlayer(personIds, createLong(start), createLong(end));
+
         for (PlayerGameStatsEntity ent : pgsForTimeAndPlayer) {
             stats.add(playerGameStatsMapper.entityToDto(ent));
         }
@@ -129,7 +147,45 @@ public class PlayerGameStatsService {
         timeline.setStats(stats);
         timeline.setCumulativeStats(createCumulativeStat(stats));
         timeline.setCumulativeStatsAdjusted(createCumulativeAdjustedStats(stats, new BigDecimal(36L)));
+        setMatchDescriptions(stats);
         return timeline;
+    }
+
+    public void setMatchDescriptions(List<PlayerGameStats> stats) {
+        Set<Long> boxscoreIds = stats.stream().map(PlayerGameStats::getBoxscoreId).collect(Collectors.toSet());
+        Map<Long, String> boxscoreGameMap = boxscoreDAO.findByIds(boxscoreIds).stream()
+                .collect(Collectors.toMap(BoxscoreEntity::getId, BoxscoreEntity::getGameId));
+        Set<String> gameIds = boxscoreDAO.findByIds(boxscoreIds).stream().map(BoxscoreEntity::getGameId).collect(Collectors.toSet());
+        List<GameEntity> games = gameDAO.findByGameIds(gameIds);
+        for (PlayerGameStats stat : stats) {
+            Optional<GameEntity> game = games.stream().filter(isGameId(boxscoreGameMap.get(stat.getBoxscoreId()))).findFirst();
+            if (game.isPresent()) {
+                StringBuilder sb = new StringBuilder();
+                sb.append(game.get().getDate().substring(0, 4));
+                sb.append("/");
+                sb.append(game.get().getDate().substring(4, 6));
+                sb.append("/");
+                sb.append(game.get().getDate().substring(6, 8));
+                sb.append(" - ");
+                sb.append(game.get().getArena());
+                sb.append(" ");
+                sb.append(game.get().getCity());
+                sb.append(" - ");
+                sb.append(game.get().getGameUrl().split("/")[1].substring(0, 3));
+                sb.append("@");
+                sb.append(game.get().getGameUrl().split("/")[1].substring(3, 6));
+                stat.setMatchDescription(sb.toString());
+            }
+        }
+        Collections.sort(stats, (s1, s2) -> compareStats(s1, s2));
+    }
+
+    private int compareStats(PlayerGameStats s1, PlayerGameStats s2) {
+        return s1.getMatchDescription().compareTo(s2.getMatchDescription());
+    }
+
+    private Predicate<? super GameEntity> isGameId(String gameId) {
+        return z -> z.getGameId().equalsIgnoreCase(gameId);
     }
 
     private Long createLong(LocalDateTime start) {
@@ -281,9 +337,6 @@ public class PlayerGameStatsService {
         Long tpa = 0L;
         Long tpm = 0L;
         Long turnover = 0L;
-        BigDecimal fgp = BigDecimal.ONE;
-        BigDecimal ftp = BigDecimal.ONE;
-        BigDecimal tpp = BigDecimal.ONE;
         for (PlayerGameStats stat : stats) {
             assist += stat.getAssists();
             block += stat.getBlocks();
@@ -324,15 +377,6 @@ public class PlayerGameStatsService {
             if (stat.getTurnovers() != null) {
                 turnover += stat.getTurnovers();
             }
-            if (stat.getFgp() != null) {
-                fgp = fgp.multiply(stat.getFgp());
-            }
-            if (stat.getFtp() != null) {
-                ftp = ftp.multiply(stat.getFtp());
-            }
-            if (stat.getTpp() != null) {
-                tpp = tpp.multiply(stat.getTpp());
-            }
         }
         cumulativeStats.setPersonId("");
         cumulativeStats.setTeamId("");
@@ -342,10 +386,10 @@ public class PlayerGameStatsService {
         cumulativeStats.setDnp("");
         cumulativeStats.setFga(fga);
         cumulativeStats.setFgm(fgm);
-        cumulativeStats.setFgp(fgp);
+        cumulativeStats.setFgp(BigDecimal.valueOf(((float) fgm / fga) * 100L).round(new MathContext(4, RoundingMode.CEILING)));
         cumulativeStats.setFta(fta);
         cumulativeStats.setFtm(ftm);
-        cumulativeStats.setFtp(ftp);
+        cumulativeStats.setFtp(BigDecimal.valueOf(((float) ftm / fta) * 100L).round(new MathContext(4, RoundingMode.CEILING)));
         cumulativeStats.setIsOnCourt("");
         cumulativeStats.setMin("");
         cumulativeStats.setOffReb(offreb);
@@ -358,7 +402,7 @@ public class PlayerGameStatsService {
         cumulativeStats.setTotReb(totReb);
         cumulativeStats.setTpa(tpa);
         cumulativeStats.setTpm(tpm);
-        cumulativeStats.setTpp(tpp);
+        cumulativeStats.setTpp(BigDecimal.valueOf(((float) tpm / tpa) * 100L).round(new MathContext(4, RoundingMode.CEILING)));
         cumulativeStats.setTurnovers(turnover);
         return cumulativeStats;
     }
@@ -370,5 +414,36 @@ public class PlayerGameStatsService {
             Long year = Long.parseLong(z.getYear());
             return year.equals(startYear) || year.equals(endYear) || (year < endYear && year > startYear);
         };
+    }
+
+    public PlayerGameStatsTimelineSpecific getTimeLineSpecific(String name, String surname, LocalDateTime startDate, LocalDateTime endDate,
+            List<String> selectedStats) throws Exception {
+        PlayerGameStatsTimelineSpecific timeline = new PlayerGameStatsTimelineSpecific();
+        List<PlayerEntity> playerIdsForPeriod = playerDAO.findByNameAndSurname(name, surname);
+        List<String> personIds = playerIdsForPeriod.stream().filter(isInTimeFrame(startDate, endDate)).map(PlayerEntity::getPersonId)
+                .distinct().collect(Collectors.toList());
+        if (personIds.isEmpty()) {
+            throw new Exception(String.format("Player %s %s does not exist. Please check name and surname!", name, surname));
+        }
+        List<PlayerGameStatsEntity> pgsForTimeAndPlayer = pgsDAO.getPGSForTimeAndPlayer(personIds, createLong(startDate),
+                createLong(endDate));
+        Map<String, List<Long>> map = new HashMap<>();
+        Field[] attributes = PlayerGameStatsEntity.class.getDeclaredFields();
+        for (Field field : attributes) {
+            if (selectedStats.contains(field.getName())) {
+                field.setAccessible(true);
+                map.put(field.getName(), new ArrayList<>());
+            }
+        }
+        for (PlayerGameStatsEntity ent : pgsForTimeAndPlayer) {
+            for (Field field : attributes) {
+                field.setAccessible(true);
+                if (map.get(field.getName()) != null) {
+                    map.get(field.getName()).add((Long) field.get(ent));
+                }
+            }
+        }
+        timeline.setMapOfStats(map);
+        return timeline;
     }
 }

@@ -8,79 +8,33 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TeamBoxscoreStatEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", updatable = false, nullable = false)
-    private Long id;
+    Long id;
 
-    private Long fastBreakPoints;
-    private Long pointsInPaint;
-    private Long biggestLead;
-    private Long secondChancePoints;
-    private Long longestRun;
-    private String teamId;
+    Long fastBreakPoints;
+    Long pointsInPaint;
+    Long biggestLead;
+    Long secondChancePoints;
+    Long longestRun;
+    String teamId;
 
     @OneToOne
     @JoinColumn(name = "BOXSCORE_ID")
-    private BoxscoreEntity boxscore;
-
-    public Long getFastBreakPoints() {
-        return fastBreakPoints;
-    }
-
-    public void setFastBreakPoints(Long fastBreakPoints) {
-        this.fastBreakPoints = fastBreakPoints;
-    }
-
-    public Long getPointsInPaint() {
-        return pointsInPaint;
-    }
-
-    public void setPointsInPaint(Long pointsInPaint) {
-        this.pointsInPaint = pointsInPaint;
-    }
-
-    public Long getBiggestLead() {
-        return biggestLead;
-    }
-
-    public void setBiggestLead(Long biggestLead) {
-        this.biggestLead = biggestLead;
-    }
-
-    public Long getSecondChancePoints() {
-        return secondChancePoints;
-    }
-
-    public void setSecondChancePoints(Long secondChancePoints) {
-        this.secondChancePoints = secondChancePoints;
-    }
-
-    public Long getLongestRun() {
-        return longestRun;
-    }
-
-    public void setLongestRun(Long longestRun) {
-        this.longestRun = longestRun;
-    }
-
-    public BoxscoreEntity getBoxscore() {
-        return boxscore;
-    }
-
-    public void setBoxscore(BoxscoreEntity boxscore) {
-        this.boxscore = boxscore;
-    }
-
-    public String getTeamId() {
-        return teamId;
-    }
-
-    public void setTeamId(String teamId) {
-        this.teamId = teamId;
-    }
+    BoxscoreEntity boxscore;
 
 }
